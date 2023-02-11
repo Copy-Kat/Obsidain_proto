@@ -4,3 +4,12 @@
   border: solid 1px;
   font-size: 2rem;
 }
+
+.container {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.container > div {
+  display: inline-block;
+}

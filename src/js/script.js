@@ -3,7 +3,7 @@ document.getElementById("bold").addEventListener("click", () => {
     document.getElementById("main").focus();
 
     // get the main editor
-    var textArea = document.getElementById("main");
+    var textArea = document.getElementById("container");
 
     // get the text string of the editor
     var text //= textArea.innerHTML.toString();
@@ -15,6 +15,8 @@ document.getElementById("bold").addEventListener("click", () => {
     // get containers
     const startContainer = selection.startContainer;
     const endContainer = selection.endContainer;
+
+    console.log(startContainer, endContainer);
 
     // get childnodes
     var childnodes =  textArea.childNodes;
@@ -32,12 +34,23 @@ document.getElementById("bold").addEventListener("click", () => {
     // case 1: same div no bolding yet
     if (indexStart === indexEnd) {
         // get text
-        text = startContainer.innerHTML;
-        text1 = startContainer.innerText;
-        var newText = text.slice(0, startOffset) 
-                        + "<strong>" + text1.slice(startOffset, endOffset) 
-                        + "</strong>" + text.slice(endOffset)
-        startContainer.parentElement.innerHTML = newText;
+        text = startContainer.parentElement.innerHTML;
+
+        const newDiv = document.createElement("div");
+        const boldDiv = document.createElement("div");
+
+        newDiv.contentEditable = "true";
+        boldDiv.contentEditable = "true";
+
+        newDiv.innerText = text.slice(0, startOffset);
+        boldDiv.innerHTML = "<strong>" + text.slice(startOffset, endOffset) + "</strong>";
+
+        textArea.insertBefore(newDiv, startContainer.parentElement);
+        textArea.insertBefore(boldDiv, startContainer.parentElement);
+
+        startContainer.parentElement.innerHTML = text.slice(endOffset);
+
+        console.log(text)
     }
 
     // console.log(selection.commonAncestorContainer == textArea)
@@ -68,6 +81,8 @@ document.getElementById("bold").addEventListener("click", () => {
     //document.getElementById("text").innerHTML = text.replace(selection, boldText) //use innerhtml instead of innertext
 });
 
+
+document.addEventListener()
 
 function italic() {
 var editor = document.getElementById("main-area");
