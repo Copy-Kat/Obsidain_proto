@@ -1,7 +1,19 @@
 document.getElementById("bold").addEventListener("click", () => {
+    format("STRONG", "<strong>", "</strong>");
+});
 
+document.getElementById("italic").addEventListener("click", () => {
+    format("EM", "<em>", "</em>");
+});
+
+document.getElementById("underline").addEventListener("click", () => {
+    format("U", "<u>", "</u>");
+});
+
+function format(elementType, elementOpen, elementClose) {
     // get the text string of the editor
     var text, text1, id
+    var text2 = ""
 
     // get selection
     const selection = window.getSelection().getRangeAt(0);
@@ -53,6 +65,7 @@ document.getElementById("bold").addEventListener("click", () => {
 
     // case 1: single line no boling
     if (indexStart === indexEnd) {
+        // console.log("1")
         // get text
         text = startContainer.parentElement.innerText;
 
@@ -63,106 +76,77 @@ document.getElementById("bold").addEventListener("click", () => {
         boldDiv.contentEditable = "true";
 
         newDiv.innerHTML = text.slice(0, startOffset).replaceAll(" ", "&nbsp;");
-        boldDiv.innerHTML = "<strong>" + text.slice(startOffset, endOffset).replaceAll(" ", "&nbsp;") + "</strong>";
+        boldDiv.innerHTML = elementOpen + text.slice(startOffset, endOffset).replaceAll(" ", "&nbsp;") + elementClose;
 
         textArea.insertBefore(newDiv, startContainer.parentElement);
         textArea.insertBefore(boldDiv, startContainer.parentElement);
 
         startContainer.parentElement.innerHTML = text.slice(endOffset).replaceAll(" ", "&nbsp;");
-
-        console.log(text.slice(0, startOffset))
     }
 
     else if (indexStart + 1 === indexEnd) {
 
-        text = startContainer.parentElement.innerHTML;
-        text1 = endContainer.parentElement.innerHTML;
+        text = startContainer.parentElement.innerText;
+        text1 = endContainer.parentElement.innerText;
 
-        if (endContainer.parentElement.tagName === "STRONG"){
+        if (endContainer.parentElement.tagName === elementType){
         
-            startContainer.parentElement.innerHTML = text.slice(0, startOffset);
-            endContainer.parentElement.innerHTML = text.slice(startOffset) + text1
-            //console.log(text, text1)
+            startContainer.parentElement.innerHTML = text.slice(0, startOffset).replaceAll(" ", "&nbsp;");
+            endContainer.parentElement.innerHTML = text.slice(startOffset).replaceAll(" ", "&nbsp;") + text1.replaceAll(" ", "&nbsp;")
         }
+        
         else {
-            startContainer.parentElement.innerHTML = text + text1.slice(0, endOffset + 5);
-            endContainer.parentElement.innerHTML = text1.slice(endOffset + 5);
+            startContainer.parentElement.innerHTML = text.replaceAll(" ", "&nbsp;") + text1.slice(0, endOffset).replaceAll(" ", "&nbsp;");
+            endContainer.parentElement.innerHTML = text1.slice(endOffset).replaceAll(" ", "&nbsp;");
         }
     }
 
+    else {
 
-    // else {
-    //     // case 2: 2 consecutive div no bold
-    //     if (indexStart + 2 === indexEnd) {
+        text = startContainer.parentElement.innerText;
+        text1 = endContainer.parentElement.innerText;
+        
+        for (let index = indexStart + 1; index < indexEnd; index++) {
+            text2 += childnodes[index].innerText;
+        }
+
+        for (let index = indexStart + 1; index < indexEnd; index++) {
+            textArea.removeChild(childnodes[indexStart + 1]);
+        }
+        
+        if (startContainer.parentElement.tagName === "DIV" && endContainer.parentElement.tagName === elementType){
+        
+            startContainer.parentElement.innerHTML = text.slice(0, startOffset).replaceAll(" ", "&nbsp;");
+            endContainer.parentElement.innerHTML = text.slice(startOffset).replaceAll(" ", "&nbsp;") + text2.replaceAll(" ", "&nbsp;") + text1.replaceAll(" ", "&nbsp;")
+        }
+
+        else if (startContainer.parentElement.tagName === elementType && endContainer.parentElement.tagName === "DIV"){
+        
+            startContainer.parentElement.innerHTML = text.replaceAll(" ", "&nbsp;") + text2.replaceAll(" ", "&nbsp;") + text1.slice(0, endOffset).replaceAll(" ", "&nbsp;");
+            endContainer.parentElement.innerHTML = text1.slice(endOffset).replaceAll(" ", "&nbsp;");
+        }
+
+        else if (startContainer.parentElement.tagName === "DIV" && endContainer.parentElement.tagName === "DIV"){
+        
+            const boldDiv = document.createElement("div");
+
+            boldDiv.contentEditable = "true";
+
+            boldDiv.innerHTML = elementOpen + text.slice(startOffset).replaceAll(" ", "&nbsp;") + text2.replaceAll(" ", "&nbsp;") + text1.slice(0, endOffset).replaceAll(" ", "&nbsp;") + elementClose;
+
+            textArea.insertBefore(boldDiv, endContainer.parentElement);
             
-    //         text = startContainer.parentElement.innerText;
-    //         text1 = endContainer.parentElement.innerText;
+            startContainer.parentElement.innerHTML = text.slice(0, startOffset).replaceAll(" ", "&nbsp;");
+            endContainer.parentElement.innerHTML = text1.slice(endOffset).replaceAll(" ", "&nbsp;");
+        }
+
+        else if (startContainer.parentElement.tagName === elementType && endContainer.parentElement.tagName === elementType){
             
-    //         const boldDiv1 = document.createElement("div");
-    //         const boldDiv2 = document.createElement("div");
+            startContainer.parentElement.innerText = text.replaceAll(" ", "&nbsp;") + text2.replaceAll(" ", "&nbsp;") + text1.replaceAll(" ", "&nbsp;");
 
-    //         boldDiv1.innerHTML = "<strong>" + text.slice(startOffset) + "</strong>";
-    //         boldDiv2.innerHTML = "<strong>" + text1.slice(0, endOffset) + "</strong>";
+            endContainer.parentElement.remove();
 
-    //         textArea.insertBefore(boldDiv1, startContainer.parentElement)
-    //         textArea.insertBefore(boldDiv2, endContainer.parentElement);
+        }
 
-    //         startContainer.parentElement.innerText = text.slice(0, startOffset);
-    //         endContainer.parentElement.innerText = text1.slice(endOffset)
-    //     }
-    // }
-
-    // console.log(selection.commonAncestorContainer == textArea)
-    // console.log(selection)
-    console.log(startOffset, endOffset)
-    // console.log(selection.startContainer.parentElement, selection.endContainer.parentElement)
-    
-    
-    console.log(indexStart, indexEnd)
-
-
-    
-    // var textArea = document.getElementById("main");
-    // var text = textArea.innerHTML.toString();
-    // var selection = window.getSelection();
-    // if (selection.anchorOffset != selection.focusOffset) {
-    //     console.log(selection.anchorOffset, selection.focusOffset)
-    //     console.log(text.slice(selection.anchorOffset, selection.focusOffset))
-    //     var newString = text.slice(0, selection.anchorOffset) 
-    //                     + "<b>" + text.slice(selection.anchorOffset, selection.focusOffset) 
-    //                     + "</b>" + text.slice(selection.focusOffset)
-    //     console.log(textArea.innerHTML);
-    //     textArea.innerHTML = newString;
-
-    // }
-    
-    //let boldText = "<b>" + selection + "</b>"
-    //document.getElementById("text").innerHTML = text.replace(selection, boldText) //use innerhtml instead of innertext
-});
-
-
-// document.addEventListener()
-
-function italic() {
-var editor = document.getElementById("main-area");
-var start = editor.selectionStart;
-var end = editor.selectionEnd;
-var selectedText = editor.value.substring(start, end);
-var newText = "<i>" + selectedText + "</i>";
-editor.value =
-    editor.value.substring(0, start) +
-    newText +
-    editor.value.substring(end);
-}
-
-function underline() {
-    var editor = document.getElementById("main-area");
-    var start = editor.selectionStart;
-    var end = editor.selectionEnd;
-    var selectedText = editor.value.substring(start, end);
-    var newText = "<u>" + selectedText + "</u>";
-    editor.value =
-        editor.value.substring(0, start) +
-        newText +
-        editor.value.substring(end);
     }
+}
