@@ -5,11 +5,13 @@
   font-size: 2rem;
 }
 
-.container {
+.line {
   display: inline-block;
   white-space: nowrap;
+  height: 2rem;
+  width: 100%;
 }
 
-.container > div {
+.line > div {
   display: inline-block;
 }
