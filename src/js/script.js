@@ -12,7 +12,16 @@ document.getElementById("underline").addEventListener("click", () => {
 
 // INPUT HANDLING
 document.addEventListener("keydown", (event) => {
-    console.log('Caret at: ', event.target.selectionStart)
+    switch (event.key) {
+        case "Enter":
+            //event.preventDefault();
+            console.log(event.key)
+            //enter();
+            break;
+    
+        default:
+            break;
+    }
     if (event.ctrlKey) {
         event.preventDefault();
         switch (event.key) {
@@ -35,7 +44,7 @@ document.addEventListener("keydown", (event) => {
 // TEXT FORMATING
 function format(elementType, elementOpen, elementClose) {
     // get the text string of the editor
-    var text, text1, id
+    var text, text1, textArea;
     var text2 = ""
 
     // get selection
@@ -46,15 +55,15 @@ function format(elementType, elementOpen, elementClose) {
     const endContainer = selection.endContainer;
 
     if (startContainer === endContainer) {
-        id = startContainer.parentElement.parentElement.id
+        textArea = startContainer.parentElement.parentElement
     }
     else {
-        id = selection.commonAncestorContainer.id
+        textArea = selection.commonAncestorContainer
     }
     
     // get the main editor
-    var textArea = document.getElementById(id);
-    document.getElementById(id).focus(); // keep focus
+    //var textArea = startContainer.parentElement;
+    //document.getElementById(id).focus(); // keep focus
 
     console.log(startContainer, endContainer);
 
@@ -184,4 +193,15 @@ function format(elementType, elementOpen, elementClose) {
             element.remove();
         }
     });
+}
+
+// TODO: FIX THIS
+function enter() {
+    const selection = window.getSelection().getRangeAt(0);
+    
+    text = selection.startContainer.parentElement.innerText;
+
+    console.log(selection.startContainer.parentElement.innerHTML)
+
+    selection.startContainer.parentElement.innerHTML = text.slice(0, selection.startOffset) + "</br>" + text.slice(selection.startOffset);
 }
