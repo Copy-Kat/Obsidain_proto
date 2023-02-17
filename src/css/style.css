@@ -15,3 +15,8 @@
 .line > div {
   display: inline-block;
 }
+
+p {
+  margin-top: 0;
+  word-break: break-all;
+}
