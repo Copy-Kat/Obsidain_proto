@@ -1,25 +1,53 @@
+* {
+  font-family: 'PT Serif', serif;
+}
+
+body {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 50px 200px auto;
+}
+
+.utilities {
+  width: 50px;
+  height: 100vh;
+  grid-row: 1;
+  grid-column: 1;
+  background-color: #22222a;
+}
+
 .main {
-  width: 80vw;
-  height: 80vh;
-  border: solid 1px;
-  font-size: 2rem;
+  width: auto;
+  border: none;
+  font-size: 1.5rem;
   overflow: auto;
-}
-
-.line {
-  display: inline-block;
-  white-space: nowrap;
-  height: 2rem;
-  width: 100%;
-}
-
-.line > div {
-  display: inline-block;
+  grid-row: 1;
+  grid-column-start: 3;
+  grid-column-end: -1;
 }
 
 p {
   margin-top: 0;
   margin-bottom: 10px;
   word-break: break-all;
-  white-space: pre-line;
+}
+
+.utilities > ul {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  margin: 2px;
+  display: block;
+  text-decoration: none;
+  width: 70%;
+}
+
+li img {
+  color: aliceblue;
 }

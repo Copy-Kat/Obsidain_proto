@@ -1,3 +1,24 @@
+var states = [];
+var currentState = 0
+
+function setup() {
+    
+    var previousState = document.getElementById("main").innerHTML;
+
+    states.push(previousState);
+
+    //console.log(states.length)
+}
+
+const keyBinds = {
+
+    bold : "b",
+    italics : "i",
+    underline : "u",
+    undo : "z"
+    
+}
+
 document.getElementById("bold").addEventListener("click", () => {
     format("STRONG", "<strong>", "</strong>");
 });
@@ -10,8 +31,10 @@ document.getElementById("underline").addEventListener("click", () => {
     format("U", "<u>", "</u>");
 });
 
+
 // INPUT HANDLING
 document.addEventListener("keydown", (event) => {
+
     switch (event.key) {
         case "Enter":
             //event.preventDefault();
@@ -22,29 +45,62 @@ document.addEventListener("keydown", (event) => {
         default:
             break;
     }
+
+
     if (event.ctrlKey) {
-        event.preventDefault();
+        //event.preventDefault();
         switch (event.key) {
-            case "b":
+            case keyBinds.bold:
+                event.preventDefault();
                 format("STRONG", "<strong>", "</strong>");
                 break;
-            case "i":
+            case keyBinds.italics:
+                event.preventDefault();
                 format("EM", "<em>", "</em>");
                 break;
-            case "u":
+            case keyBinds.underline:
+                event.preventDefault();
                 format("U", "<u>", "</u>");
+                break;
+            case keyBinds.undo:
+                event.preventDefault();
+                currentState--;
+                if (currentState < 0) {
+                    currentState = 0;
+                    break;
+                }
+                let body = document.getElementById("main");
+                body.innerHTML = states[currentState];
+                states.pop()
                 break;
             default:
                 console.log("Not Implemented");
+                break;
         }
     }
 });
+
+document.addEventListener("keyup", () => {
+
+    let newState = document.getElementById("main").innerHTML;
+
+    //console.log(newState)
+    let previousState = states[currentState];
+    //console.log(newState, previousState)
+
+    if (newState != previousState) {
+        states.push(newState)
+        currentState++;
+        console.log(states)
+    }
+})
 
 
 // TEXT FORMATING
 function format(elementType, elementOpen, elementClose) {
     // get the text string of the editor
-    var text, text1, textArea;
+    var text, text1, textArea; 
+    var multi_line = false;
     var text2 = ""
 
     // get selection
@@ -75,6 +131,7 @@ function format(elementType, elementOpen, elementClose) {
     // get the indecies 
     var indexStart, indexEnd
 
+    // assumption: if not span then depth 1
     if(startContainer.parentElement.tagName === 'SPAN') {
         var indexStart = Array.from(childnodes).indexOf(startContainer.parentElement);
     }
