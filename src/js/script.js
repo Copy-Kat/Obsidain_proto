@@ -19,17 +19,17 @@ const keyBinds = {
     
 }
 
-document.getElementById("bold").addEventListener("click", () => {
-    format("STRONG", "<strong>", "</strong>");
-});
+// document.getElementById("bold").addEventListener("click", () => {
+//     format("STRONG", "<strong>", "</strong>");
+// });
 
-document.getElementById("italic").addEventListener("click", () => {
-    format("EM", "<em>", "</em>");
-});
+// document.getElementById("italic").addEventListener("click", () => {
+//     format("EM", "<em>", "</em>");
+// });
 
-document.getElementById("underline").addEventListener("click", () => {
-    format("U", "<u>", "</u>");
-});
+// document.getElementById("underline").addEventListener("click", () => {
+//     format("U", "<u>", "</u>");
+// });
 
 
 // INPUT HANDLING
@@ -52,15 +52,15 @@ document.addEventListener("keydown", (event) => {
         switch (event.key) {
             case keyBinds.bold:
                 event.preventDefault();
-                format("STRONG", "<strong>", "</strong>");
+                format("bold");
                 break;
             case keyBinds.italics:
                 event.preventDefault();
-                format("EM", "<em>", "</em>");
+                format("em");
                 break;
             case keyBinds.underline:
                 event.preventDefault();
-                format("U", "<u>", "</u>");
+                format("u");
                 break;
             case keyBinds.undo:
                 event.preventDefault();
@@ -74,7 +74,7 @@ document.addEventListener("keydown", (event) => {
                 states.pop()
                 break;
             default:
-                console.log("Not Implemented");
+                //console.log("Not Implemented");
                 break;
         }
     }
@@ -91,13 +91,13 @@ document.addEventListener("keyup", () => {
     if (newState != previousState) {
         states.push(newState)
         currentState++;
-        console.log(states)
+        // console.log(states)
     }
 })
 
 
 // TEXT FORMATING
-function format(elementType, elementOpen, elementClose) {
+function format(elementType) {
     // get the text string of the editor
     var text, text1, textArea; 
     var multi_line = false;
@@ -110,6 +110,14 @@ function format(elementType, elementOpen, elementClose) {
     const startContainer = selection.startContainer;
     const endContainer = selection.endContainer;
 
+    //console.log(startContainer.parentElement.classList , endContainer.parentElement.classNames)
+
+    // classes 
+    const startContainerClasses = startContainer.parentElement.classList
+    const endContainerClasses = endContainer.parentElement.classList
+
+    // console.log(startContainerClasses, endContainerClasses)
+
     if (startContainer === endContainer) {
         textArea = startContainer.parentElement.parentElement
     }
@@ -121,38 +129,28 @@ function format(elementType, elementOpen, elementClose) {
     //var textArea = startContainer.parentElement;
     //document.getElementById(id).focus(); // keep focus
 
-    console.log(startContainer, endContainer);
+    //console.log(startContainer, endContainer);
 
     // get childnodes
     var childnodes =  textArea.childNodes;
 
-    console.log(childnodes)
+    // console.log(childnodes)
     
     // get the indecies 
     var indexStart, indexEnd
 
     // assumption: if not span then depth 1
-    if(startContainer.parentElement.tagName === 'SPAN') {
-        var indexStart = Array.from(childnodes).indexOf(startContainer.parentElement);
-    }
-    else {
-        indexStart = Array.from(childnodes).indexOf(startContainer.parentElement.parentElement);
-    }
+    var indexStart = Array.from(childnodes).indexOf(startContainer.parentElement);
 
-    if(endContainer.parentElement.tagName === 'SPAN') {
-        var indexEnd = Array.from(childnodes).indexOf(endContainer.parentElement);
-    }
-    else {
-        indexEnd = Array.from(childnodes).indexOf(endContainer.parentElement.parentElement);
-    }
+    var indexEnd = Array.from(childnodes).indexOf(endContainer.parentElement);
 
-    console.log(indexStart, indexEnd)
+    // console.log(indexStart, indexEnd)
 
     // get offset
     var startOffset = selection.startOffset;
     var endOffset = selection.endOffset;
 
-    console.log(startOffset, endOffset)
+    // console.log(startOffset, endOffset)
 
     // get the cases
 
@@ -163,16 +161,20 @@ function format(elementType, elementOpen, elementClose) {
         text = startContainer.parentElement.innerText;
 
         const newSpan = document.createElement("span");
-        const boldSpan = document.createElement("span");
-
-        newSpan.contentEditable = "true";
-        boldSpan.contentEditable = "true";
+        const formatedSpan = document.createElement("span");
 
         newSpan.innerHTML = text.slice(0, startOffset).replaceAll(" ", "&nbsp;");
-        boldSpan.innerHTML = elementOpen + text.slice(startOffset, endOffset).replaceAll(" ", "&nbsp;") + elementClose;
+        formatedSpan.innerHTML = text.slice(startOffset, endOffset).replaceAll(" ", "&nbsp;");
 
         textArea.insertBefore(newSpan, startContainer.parentElement);
-        textArea.insertBefore(boldSpan, startContainer.parentElement);
+        textArea.insertBefore(formatedSpan, startContainer.parentElement);
+
+        if (startContainerClasses.length != 0) {
+            formatedSpan.classList = startContainerClasses  
+            newSpan.classList = startContainerClasses  
+        }
+
+        formatedSpan.classList.add(elementType)
 
         startContainer.parentElement.innerHTML = text.slice(endOffset).replaceAll(" ", "&nbsp;");
     }
@@ -182,16 +184,35 @@ function format(elementType, elementOpen, elementClose) {
         text = startContainer.parentElement.innerText;
         text1 = endContainer.parentElement.innerText;
 
-        if (endContainer.parentElement.tagName === elementType){
-        
-            startContainer.parentElement.innerHTML = text.slice(0, startOffset).replaceAll(" ", "&nbsp;");
-            endContainer.parentElement.innerHTML = text.slice(startOffset).replaceAll(" ", "&nbsp;") + text1.replaceAll(" ", "&nbsp;")
+        const formatedspan1 = document.createElement("span");
+        const formatedspan2 = document.createElement("span");
+
+        formatedspan1.innerHTML = text.slice(startOffset).replaceAll(" ", "&nbsp;") 
+        formatedspan2.innerHTML =  text1.slice(0, endOffset).replaceAll(" ", "&nbsp;");
+
+        if (startContainerClasses.length != 0) {
+            formatedspan1.classList = startContainerClasses    
         }
-        
-        else {
-            startContainer.parentElement.innerHTML = text.replaceAll(" ", "&nbsp;") + text1.slice(0, endOffset).replaceAll(" ", "&nbsp;");
-            endContainer.parentElement.innerHTML = text1.slice(endOffset).replaceAll(" ", "&nbsp;");
+        if (endContainerClasses.length != 0) {
+            formatedspan2.classList = endContainerClasses    
         }
+
+        console.log(startContainerClasses, endContainerClasses)
+
+        formatedspan1.classList.add(elementType)
+        formatedspan2.classList.add(elementType)
+
+        textArea.insertBefore(formatedspan1, endContainer.parentElement);
+        textArea.insertBefore(formatedspan2, endContainer.parentElement);
+        
+        startContainer.parentElement.innerHTML = text.slice(0, startOffset).replaceAll(" ", "&nbsp;");
+        endContainer.parentElement.innerHTML = text1.slice(endOffset).replaceAll(" ", "&nbsp;");
+        // }
+        
+        // else {
+        //     startContainer.parentElement.innerHTML = text.replaceAll(" ", "&nbsp;") + text1.slice(0, endOffset).replaceAll(" ", "&nbsp;");
+        //     endContainer.parentElement.innerHTML = text1.slice(endOffset).replaceAll(" ", "&nbsp;");
+        // }
     }
 
     else {
@@ -200,46 +221,56 @@ function format(elementType, elementOpen, elementClose) {
         text1 = endContainer.parentElement.innerText;
         
         for (let index = indexStart + 1; index < indexEnd; index++) {
-            text2 += childnodes[index].innerText;
+            childnodes[index].classList.add(elementType)
         }
 
-        for (let index = indexStart + 1; index < indexEnd; index++) {
-            textArea.removeChild(childnodes[indexStart + 1]);
+        // for (let index = indexStart + 1; index < indexEnd; index++) {
+        //     textArea.removeChild(childnodes[indexStart + 1]);
+        // }
+        
+        // if (startContainer.parentElement.tagName === "SPAN" && endContainer.parentElement.tagName === elementType){
+        
+        //     startContainer.parentElement.innerHTML = text.slice(0, startOffset).replaceAll(" ", "&nbsp;");
+        //     endContainer.parentElement.innerHTML = text.slice(startOffset).replaceAll(" ", "&nbsp;") + text2.replaceAll(" ", "&nbsp;") + text1.replaceAll(" ", "&nbsp;")
+        // }
+
+        // else if (startContainer.parentElement.tagName === elementType && endContainer.parentElement.tagName === "SPAN"){
+        
+        //     startContainer.parentElement.innerHTML = text.replaceAll(" ", "&nbsp;") + text2.replaceAll(" ", "&nbsp;") + text1.slice(0, endOffset).replaceAll(" ", "&nbsp;");
+        //     endContainer.parentElement.innerHTML = text1.slice(endOffset).replaceAll(" ", "&nbsp;");
+        // }
+
+        const formatedspan1 = document.createElement("span");
+        const formatedspan2 = document.createElement("span");
+
+        formatedspan1.innerHTML = text.slice(startOffset).replaceAll(" ", "&nbsp;") 
+        formatedspan2.innerHTML =  text1.slice(0, endOffset).replaceAll(" ", "&nbsp;");
+
+        if (startContainerClasses.length != 0) {
+            formatedspan1.classList = startContainerClasses    
         }
-        
-        if (startContainer.parentElement.tagName === "SPAN" && endContainer.parentElement.tagName === elementType){
-        
-            startContainer.parentElement.innerHTML = text.slice(0, startOffset).replaceAll(" ", "&nbsp;");
-            endContainer.parentElement.innerHTML = text.slice(startOffset).replaceAll(" ", "&nbsp;") + text2.replaceAll(" ", "&nbsp;") + text1.replaceAll(" ", "&nbsp;")
+        if (endContainerClasses.length != 0) {
+            formatedspan2.classList = endContainerClasses    
         }
 
-        else if (startContainer.parentElement.tagName === elementType && endContainer.parentElement.tagName === "SPAN"){
+        console.log(startContainerClasses, endContainerClasses)
+
+        formatedspan1.classList.add(elementType)
+        formatedspan2.classList.add(elementType)
+
+        textArea.insertBefore(formatedspan1, childnodes[indexStart+1]);
+        textArea.insertBefore(formatedspan2, endContainer.parentElement);
         
-            startContainer.parentElement.innerHTML = text.replaceAll(" ", "&nbsp;") + text2.replaceAll(" ", "&nbsp;") + text1.slice(0, endOffset).replaceAll(" ", "&nbsp;");
-            endContainer.parentElement.innerHTML = text1.slice(endOffset).replaceAll(" ", "&nbsp;");
-        }
+        startContainer.parentElement.innerHTML = text.slice(0, startOffset).replaceAll(" ", "&nbsp;");
+        endContainer.parentElement.innerHTML = text1.slice(endOffset).replaceAll(" ", "&nbsp;");
 
-        else if (startContainer.parentElement.tagName === "SPAN" && endContainer.parentElement.tagName === "SPAN"){
-        
-            const boldDiv = document.createElement("span");
-
-            boldDiv.contentEditable = "true";
-
-            boldDiv.innerHTML = elementOpen + text.slice(startOffset).replaceAll(" ", "&nbsp;") + text2.replaceAll(" ", "&nbsp;") + text1.slice(0, endOffset).replaceAll(" ", "&nbsp;") + elementClose;
-
-            textArea.insertBefore(boldDiv, endContainer.parentElement);
+        // else if (startContainer.parentElement.tagName === elementType && endContainer.parentElement.tagName === elementType){
             
-            startContainer.parentElement.innerHTML = text.slice(0, startOffset).replaceAll(" ", "&nbsp;");
-            endContainer.parentElement.innerHTML = text1.slice(endOffset).replaceAll(" ", "&nbsp;");
-        }
+        //     startContainer.parentElement.innerText = text.replaceAll(" ", "&nbsp;") + text2.replaceAll(" ", "&nbsp;") + text1.replaceAll(" ", "&nbsp;");
 
-        else if (startContainer.parentElement.tagName === elementType && endContainer.parentElement.tagName === elementType){
-            
-            startContainer.parentElement.innerText = text.replaceAll(" ", "&nbsp;") + text2.replaceAll(" ", "&nbsp;") + text1.replaceAll(" ", "&nbsp;");
+        //     endContainer.parentElement.remove();
 
-            endContainer.parentElement.remove();
-
-        }
+        // }
 
     }
 
