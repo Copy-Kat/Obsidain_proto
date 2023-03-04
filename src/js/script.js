@@ -10,6 +10,19 @@ function setup() {
     //console.log(states.length)
 }
 
+// function select() {
+//     let navBar = document.getElementById("top");
+//     navBar.childNodes.forEach(node => {
+//         if (node instanceof SVGElement) {
+//             console.log(node)
+//         }
+//     });
+// }
+
+// document.getElementsByClassName("icon").addEventListener("click", () => {
+//     console.log("hi")
+// })
+
 const keyBinds = {
 
     bold : "b",
@@ -207,12 +220,7 @@ function format(elementType) {
         
         startContainer.parentElement.innerHTML = text.slice(0, startOffset).replaceAll(" ", "&nbsp;");
         endContainer.parentElement.innerHTML = text1.slice(endOffset).replaceAll(" ", "&nbsp;");
-        // }
-        
-        // else {
-        //     startContainer.parentElement.innerHTML = text.replaceAll(" ", "&nbsp;") + text1.slice(0, endOffset).replaceAll(" ", "&nbsp;");
-        //     endContainer.parentElement.innerHTML = text1.slice(endOffset).replaceAll(" ", "&nbsp;");
-        // }
+
     }
 
     else {
@@ -223,22 +231,6 @@ function format(elementType) {
         for (let index = indexStart + 1; index < indexEnd; index++) {
             childnodes[index].classList.add(elementType)
         }
-
-        // for (let index = indexStart + 1; index < indexEnd; index++) {
-        //     textArea.removeChild(childnodes[indexStart + 1]);
-        // }
-        
-        // if (startContainer.parentElement.tagName === "SPAN" && endContainer.parentElement.tagName === elementType){
-        
-        //     startContainer.parentElement.innerHTML = text.slice(0, startOffset).replaceAll(" ", "&nbsp;");
-        //     endContainer.parentElement.innerHTML = text.slice(startOffset).replaceAll(" ", "&nbsp;") + text2.replaceAll(" ", "&nbsp;") + text1.replaceAll(" ", "&nbsp;")
-        // }
-
-        // else if (startContainer.parentElement.tagName === elementType && endContainer.parentElement.tagName === "SPAN"){
-        
-        //     startContainer.parentElement.innerHTML = text.replaceAll(" ", "&nbsp;") + text2.replaceAll(" ", "&nbsp;") + text1.slice(0, endOffset).replaceAll(" ", "&nbsp;");
-        //     endContainer.parentElement.innerHTML = text1.slice(endOffset).replaceAll(" ", "&nbsp;");
-        // }
 
         const formatedspan1 = document.createElement("span");
         const formatedspan2 = document.createElement("span");
@@ -263,14 +255,6 @@ function format(elementType) {
         
         startContainer.parentElement.innerHTML = text.slice(0, startOffset).replaceAll(" ", "&nbsp;");
         endContainer.parentElement.innerHTML = text1.slice(endOffset).replaceAll(" ", "&nbsp;");
-
-        // else if (startContainer.parentElement.tagName === elementType && endContainer.parentElement.tagName === elementType){
-            
-        //     startContainer.parentElement.innerText = text.replaceAll(" ", "&nbsp;") + text2.replaceAll(" ", "&nbsp;") + text1.replaceAll(" ", "&nbsp;");
-
-        //     endContainer.parentElement.remove();
-
-        // }
 
     }
 
