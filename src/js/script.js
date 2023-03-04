@@ -7,21 +7,7 @@ function setup() {
 
     states.push(previousState);
 
-    //console.log(states.length)
 }
-
-// function select() {
-//     let navBar = document.getElementById("top");
-//     navBar.childNodes.forEach(node => {
-//         if (node instanceof SVGElement) {
-//             console.log(node)
-//         }
-//     });
-// }
-
-// document.getElementsByClassName("icon").addEventListener("click", () => {
-//     console.log("hi")
-// })
 
 const keyBinds = {
 
@@ -31,6 +17,30 @@ const keyBinds = {
     undo : "z"
     
 }
+
+const extensions = document.getElementById("top").childNodes;
+extensions.forEach(extension => {
+    extension.addEventListener("click", () => {
+        if (extension.dataset.selected == "true") {
+            extension.dataset.selected = "false";
+            document.getElementById("main").dataset.full = "true";
+            document.getElementById("open-editors").dataset.full = "true";
+            return
+        }
+        extension.dataset.selected = "true";
+        document.getElementById("main").dataset.full = "false";
+        document.getElementById("open-editors").dataset.full = "false"; 
+        let id = extension.id;
+        let childNodes = document.getElementById("top").childNodes;
+        childNodes.forEach(node => {
+            if (node.id != id && node instanceof SVGElement) {
+                //console.log(node)
+                node.dataset.selected = "false"
+            }
+        });
+    })
+});
+
 
 // document.getElementById("bold").addEventListener("click", () => {
 //     format("STRONG", "<strong>", "</strong>");
@@ -114,7 +124,7 @@ function format(elementType) {
     // get the text string of the editor
     var text, text1, textArea; 
     var multi_line = false;
-    var text2 = ""
+    var undo = false;
 
     // get selection
     const selection = window.getSelection().getRangeAt(0);
@@ -128,6 +138,11 @@ function format(elementType) {
     // classes 
     const startContainerClasses = startContainer.parentElement.classList
     const endContainerClasses = endContainer.parentElement.classList
+
+    if (startContainerClasses.contains(elementType) && endContainerClasses.contains(elementType)) {
+        undo = true;
+        console.log(undo);
+    }
 
     // console.log(startContainerClasses, endContainerClasses)
 
@@ -187,7 +202,11 @@ function format(elementType) {
             newSpan.classList = startContainerClasses  
         }
 
-        formatedSpan.classList.add(elementType)
+        if (undo) {
+            formatedSpan.classList.remove(elementType);
+        } else {
+            formatedSpan.classList.add(elementType);
+        }
 
         startContainer.parentElement.innerHTML = text.slice(endOffset).replaceAll(" ", "&nbsp;");
     }
@@ -212,8 +231,13 @@ function format(elementType) {
 
         console.log(startContainerClasses, endContainerClasses)
 
-        formatedspan1.classList.add(elementType)
-        formatedspan2.classList.add(elementType)
+        if (undo) {
+            formatedspan1.classList.remove(elementType);
+            formatedspan2.classList.remove(elementType)
+        } else {
+            formatedspan1.classList.add(elementType);
+            formatedspan2.classList.add(elementType);
+        }
 
         textArea.insertBefore(formatedspan1, endContainer.parentElement);
         textArea.insertBefore(formatedspan2, endContainer.parentElement);
@@ -247,8 +271,13 @@ function format(elementType) {
 
         console.log(startContainerClasses, endContainerClasses)
 
-        formatedspan1.classList.add(elementType)
-        formatedspan2.classList.add(elementType)
+        if (undo) {
+            formatedspan1.classList.remove(elementType);
+            formatedspan2.classList.remove(elementType)
+        } else {
+            formatedspan1.classList.add(elementType);
+            formatedspan2.classList.add(elementType);
+        }
 
         textArea.insertBefore(formatedspan1, childnodes[indexStart+1]);
         textArea.insertBefore(formatedspan2, endContainer.parentElement);
