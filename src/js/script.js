@@ -15,7 +15,7 @@ const keyBinds = {
     italics : "i",
     underline : "u",
     undo : "z",
-    test : "t"
+    test : "f"
     
 }
 
@@ -60,10 +60,9 @@ extensions.forEach(extension => {
 document.addEventListener("keydown", (event) => {
 
     switch (event.key) {
-        case "Enter":
-            //event.preventDefault();
-            console.log(event.key)
-            //enter();
+        case "Tab":
+            event.preventDefault();
+            tab();
             break;
     
         default:
@@ -76,14 +75,17 @@ document.addEventListener("keydown", (event) => {
         const selection = window.getSelection().getRangeAt(0)       
 
         switch (event.key) {
+
             case keyBinds.bold:
                 event.preventDefault();
                 format("bold", selection);
                 break;
+
             case keyBinds.italics:
                 event.preventDefault();
                 format("em", selection);
                 break;
+                
             case keyBinds.underline:
                 event.preventDefault();
                 format("u", selection);
@@ -100,6 +102,13 @@ document.addEventListener("keydown", (event) => {
                 body.innerHTML = states[currentState];
                 states.pop()
                 break;
+
+            case keyBinds.test:
+                event.preventDefault();
+                const editor = document.getElementById("main");
+                console.log(getCaretIndex(editor))
+                break;
+
             default:
                 //console.log("Not Implemented");
                 break;
@@ -122,6 +131,45 @@ document.addEventListener("keyup", () => {
     }
 })
 
+function tab() {
+    
+    const [pos, node] = getCaretPos()
+
+    const text = node.innerText
+
+    node.innerHTML = text.slice(0, pos).replaceAll(" ", "&nbsp;") + "&nbsp;&nbsp;&nbsp;&nbsp;" + text.slice(pos).replaceAll(" ", "&nbsp;")
+    
+    var selection = window.getSelection();
+    
+    var range = document.createRange();
+
+    range.selectNode(node);
+
+    range.setStart(node.firstChild, pos + 4)
+
+    selection.removeAllRanges()
+    
+    selection.addRange(range);
+
+    range.collapse(true);
+}
+
+function getCaretPos() {
+
+    let position = 0;
+    //const selection = window.getSelection();
+
+    var range = window.getSelection().getRangeAt(0);
+
+    const preCaretRange = range.cloneRange();
+
+    preCaretRange.selectNodeContents(range.startContainer.parentElement);
+    preCaretRange.setEnd(range.endContainer, range.endOffset);
+
+    position = preCaretRange.toString().length;
+
+    return [position, range.startContainer.parentElement];
+  }
 
 // TEXT FORMATING
 function format(elementType, selection) {
@@ -161,40 +209,13 @@ function format(elementType, selection) {
 
     if (!multi_para) {
 
-        // classes 
-        
-
-        
-        //console.log(textArea)
-
-        
-
-        // console.log(startContainerClasses, endContainerClasses)
-        
-        // get the main editor
-        //var textArea = startContainer.parentElement;
-        //document.getElementById(id).focus(); // keep focus
-
-        //console.log(startContainer, endContainer);
-
         // get childnodes
         var childnodes =  textArea.childNodes;
-
-        // console.log(childnodes)
 
         // assumption: if not span then depth 1
         var indexStart = Array.from(childnodes).indexOf(startContainer.parentElement);
 
         var indexEnd = Array.from(childnodes).indexOf(endContainer.parentElement);
-
-        // console.log(indexStart, indexEnd)
-
-        // get offset
-        
-
-        // console.log(startOffset, endOffset)
-
-        // get the cases
 
         // case 1: single line no boling
         if (indexStart === indexEnd) {
@@ -382,15 +403,4 @@ function format(elementType, selection) {
     
 
     
-}
-
-// TODO: FIX THIS
-function enter() {
-    const selection = window.getSelection().getRangeAt(0);
-    
-    text = selection.startContainer.parentElement.innerText;
-
-    console.log(selection.startContainer.parentElement.innerHTML)
-
-    selection.startContainer.parentElement.innerHTML = text.slice(0, selection.startOffset) + "</br>" + text.slice(selection.startOffset);
 }
