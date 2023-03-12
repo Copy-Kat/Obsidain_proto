@@ -394,6 +394,36 @@ function format(elementType, selection, data) {
             formatedspan2.style.cssText = endContainer.parentElement.style.cssText
         }
 
+        formatedspan1.innerHTML = text.slice(startOffset).replaceAll(" ", "&nbsp;") 
+        formatedspan2.innerHTML =  text1.slice(0, endOffset).replaceAll(" ", "&nbsp;");
+
+        if (startContainerClasses.contains(elementType + "-" + data) && endContainerClasses.contains(elementType + "-" + data)) {
+            undo = true;
+            console.log(undo);
+        }
+
+        for (let index = indexStart + 1; index < childnodesStart.length; index++) {
+            if (!childnodesStart[index].classList.contains(elementType + "-" + data)){
+                undo = false;
+                break;
+            }
+        }
+
+        for (let index = 0; index < indexEnd; index++) {
+            if (!childnodesEnd[index].classList.contains(elementType + "-" + data)){
+                undo = false;
+                break;
+            }
+        }
+
+        for (let index = indexParentStart + 1; index <= indexParentEnd - 1; index++) {
+            editorChilds[index].childNodes.forEach(element => {
+                if(!element.classList.contains(elementType + "-" + data)) {
+                    undo = false;
+                }
+            })
+        }
+
         if (undo) {
             formatedspan1.classList.remove(elementType + "-" + data);
             formatedspan2.classList.remove(elementType + "-" + data);
@@ -406,60 +436,30 @@ function format(elementType, selection, data) {
             formatedspan2.style.setProperty("--" + elementType, data);
         }
 
-        formatedspan1.innerHTML = text.slice(startOffset).replaceAll(" ", "&nbsp;") 
-        formatedspan2.innerHTML =  text1.slice(0, endOffset).replaceAll(" ", "&nbsp;");
-
-        if (startContainerClasses.contains(elementType + "-" + data) && endContainerClasses.contains(elementType + "-" + data)) {
-            undo = true;
-            console.log(undo);
-        }
-
         for (let index = indexStart + 1; index < childnodesStart.length; index++) {
-            if (!childnodes[index].classList.contains(elementType + "-" + data)){
-                undo = false;
-                break;
-            }
-        }
-
-        for (let index = 0; index < indexEnd; index++) {
-            if (!childnodes[index].classList.contains(elementType + "-" + data)){
-                undo = false;
-                break;
-            }
-        }
-
-        for (let index = indexParentStart + 1; index <= indexParentEnd - 1; index++) {
-            editorChilds[index].childNodes.every(element => {
-                if(!element.classList.contains(elementType + "-" + data)) {
-                    undo = false;
-                    return false;
-                }
-            return true;
-            })
-        }
-
-        for (let index = indexStart + 1; index < childnodesStart.length; index++) {
-            if (undo && childnodes[index].classList.contains(elementType + "-" + data)) {
-                childnodes[index].classList.remove(elementType + "-" + data);
-                childnodes[index].style.setProperty("--" + elementType, "inherit");
+            if (undo && childnodesStart[index].classList.contains(elementType + "-" + data)) {
+                childnodesStart[index].classList.remove(elementType + "-" + data);
+                childnodesStart[index].style.setProperty("--" + elementType, "inherit");
             } else { 
-                childnodes[index].classList.add(elementType + "-" + data);
-                childnodes[index].style.setProperty("--" + elementType, data);
+                childnodesStart[index].classList.add(elementType + "-" + data);
+                childnodesStart[index].style.setProperty("--" + elementType, data);
             } 
         }
 
         for (let index = 0; index < indexEnd; index++) {
-            if (undo && childnodes[index].classList.contains(elementType + "-" + data)) {
-                childnodes[index].classList.remove(elementType + "-" + data);
-                childnodes[index].style.setProperty("--" + elementType, "inherit");
+            if (undo && childnodesEnd[index].classList.contains(elementType + "-" + data)) {
+                childnodesEnd[index].classList.remove(elementType + "-" + data);
+                childnodesEnd[index].style.setProperty("--" + elementType, "inherit");
             } else { 
-                childnodes[index].classList.add(elementType + "-" + data);
-                childnodes[index].style.setProperty("--" + elementType, data);
+                childnodesEnd[index].classList.add(elementType + "-" + data);
+                childnodesEnd[index].style.setProperty("--" + elementType, data);
             } 
         }
 
         parent1.insertBefore(formatedspan1, childnodesStart[indexStart+1]);
         parent2.insertBefore(formatedspan2, endContainer.parentElement);
+
+        console.log(formatedspan1, formatedspan2)
 
         startContainer.parentElement.innerHTML = text.slice(0, startOffset).replaceAll(" ", "&nbsp;");
         endContainer.parentElement.innerHTML = text1.slice(endOffset).replaceAll(" ", "&nbsp;");
