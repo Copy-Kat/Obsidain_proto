@@ -18,7 +18,13 @@ body {
   grid-template-rows: 2rem auto;
 }
 
-.bold { font-weight: bold;}
+span {
+  font-weight: var(--bold);
+  font-style: var(--em);
+  text-decoration: var(--u);
+}
+
+/* .bold { font-weight: bold;} */
 
 .em { font-style: italic;}
 
