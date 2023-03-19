@@ -1,4 +1,4 @@
-import { Div } from "./components.js";
+import { Div, Button } from "./components.js";
 
 const test = new Div();
 
@@ -7,6 +7,7 @@ const test = new Div();
 var states = [];
 var currentState = 0;
 var mainDoc = document.getElementById("main");
+var currentExtension = "";
 
 function setup() {
 	var previousState = mainDoc.innerHTML;
@@ -19,6 +20,7 @@ const keyBinds = {
 	italics: "i",
 	underline: "u",
 	undo: "z",
+	highlight: "i",
 	test: "f",
 };
 
@@ -32,16 +34,33 @@ var extensionDiv = document.createElement("div");
 
 extensionDiv.id = "extension";
 
-var wraperDiv = document.createElement("div");
+var formatDiv = document.createElement("div");
+
+formatDiv.id = "format-div";
+
+formatDiv.dataset.visible = false
 
 for (const [key, value] of Object.entries(dataProperties)) {
 	let data = document.createElement("div");
 	data.id = key;
 	data.innerText = "";
-	extensionDiv.appendChild(data);
+	formatDiv.appendChild(data);
 }
 
+extensionDiv.appendChild(formatDiv)
+
 extensionDiv.dataset.visible = false;
+
+var testDiv = document.createElement("div")
+
+testDiv.innerText = "heelo"
+
+testDiv.id = "file-div"
+
+testDiv.dataset.visible = false
+
+extensionDiv.appendChild(testDiv)
+
 
 document
 	.getElementById("body")
@@ -63,25 +82,36 @@ function updateFomat() {
 const extensions = document.getElementById("top").childNodes;
 extensions.forEach((extension) => {
 	extension.addEventListener("click", () => {
-		if (extension.dataset.selected == "true") {
-			extension.dataset.selected = "false";
-			mainDoc.dataset.full = "true";
-			extensionDiv.dataset.visible = "false";
+		if (extension.dataset.selected == true) {
+			extension.dataset.selected = false;
+			//console.log(document.getElementById(`${currentExtension}-div`))
+			document.getElementById(`${currentExtension}-div`).dataset.visible = false;
+			currentExtension = ""
+			mainDoc.dataset.full = true;
+			extensionDiv.dataset.visible = false;
+			//extensionDiv.innerText="he"
 			//extensionDiv.dataset.mode = extension.id
-			document.getElementById("open-editors").dataset.full = "true";
+			document.getElementById("open-editors").dataset.full = true;
 			return;
 		}
-		extension.dataset.selected = "true";
-		extensionDiv.dataset.visible = "true";
-		extensionDiv.dataset.mode = extension.id;
-		mainDoc.dataset.full = "false";
-		document.getElementById("open-editors").dataset.full = "false";
+		extension.dataset.selected = true;
+		if (currentExtension != "") {
+			document.getElementById(`${currentExtension}-div`).dataset.visible = false;
+		}
+		
+		currentExtension = extension.id
+		//console.log(document.getElementById(`${currentExtension}-div`));
+		document.getElementById(`${currentExtension}-div`).dataset.visible = true;
+		//console.log(currentExtension)
+		extensionDiv.dataset.visible = true;
+		mainDoc.dataset.full = false;
+		document.getElementById("open-editors").dataset.full = false;
 		let id = extension.id;
 		let childNodes = document.getElementById("top").childNodes;
 		childNodes.forEach((node) => {
 			if (node.id != id && node instanceof SVGElement) {
 				//console.log(node)
-				node.dataset.selected = "false";
+				node.dataset.selected = false;
 			}
 		});
 	});
