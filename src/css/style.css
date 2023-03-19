@@ -79,10 +79,15 @@ span {
   overflow-x: scroll;
   overflow-y: scroll;
   scrollbar-width: none;
+  -ms-overflow-style: none;
   grid-column-start: 3;
   grid-row: 2;
   background: var(--background-light);
   user-select: none;
+}
+
+.main::-webkit-scrollbar {
+  display: none;
 }
 
 .main[data-full="true"], .open-editors[data-full="true"] {
