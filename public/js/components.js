@@ -10,11 +10,17 @@ class Div {
 
 class Button {
 
-	constructor(path){
+	constructor(char, elementType){
+		
 		this.body = document.createElement("div")
-		this.body.innerHTML = path
+		
+		this.body.innerHTML = elementType + char[0] + elementType
+
+		this.body.classList.add(elementType)
 	}
 }
+
+const boldButton = new Button("B", "<strong>")
 
 class nameValuePair extends Div {}
 

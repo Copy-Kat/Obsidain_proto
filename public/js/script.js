@@ -1,13 +1,8 @@
-import { Div, Button } from "./components.js";
-
-const test = new Div();
-
-//console.log(test.return());
-
 var states = [];
 var currentState = 0;
 var mainDoc = document.getElementById("main");
 var currentExtension = "";
+var currentSelection
 
 function setup() {
 	var previousState = mainDoc.innerHTML;
@@ -25,14 +20,22 @@ const keyBinds = {
 };
 
 const dataProperties = {
-	bold: "font-weight",
-	italic: "font-style",
-	underline: "text-decoration",
+	bold: ["font-weight", "bold"],
+	em: ["font-style", "italic"],
+	u: ["text-decoration", "underline"],
 };
 
 var extensionDiv = document.createElement("div");
 
 extensionDiv.id = "extension";
+
+var titleDiv = document.createElement("div");
+
+titleDiv.innerText = ""
+
+titleDiv.id = "extension-name"
+
+extensionDiv.appendChild(titleDiv)
 
 var formatDiv = document.createElement("div");
 
@@ -43,7 +46,9 @@ formatDiv.dataset.visible = false
 for (const [key, value] of Object.entries(dataProperties)) {
 	let data = document.createElement("div");
 	data.id = key;
-	data.innerText = "";
+	data.dataset.elementType = value[1]
+	data.classList.add("format-button")
+	data.innerText = value[1][0];
 	formatDiv.appendChild(data);
 }
 
@@ -75,20 +80,34 @@ function updateFomat() {
 
 	for (const [key, value] of Object.entries(dataProperties)) {
 		let data = document.getElementById(key);
-		data.innerText = key + ": " + compStyle.getPropertyValue(value);
+		data.dataset.data = compStyle.getPropertyValue(value[0]);
 	}
 }
+
+const formatWraper = document.getElementById("format-div").childNodes;
+formatWraper.forEach((button) => {
+	button.addEventListener("mousedown", (e) => {
+		e.preventDefault();
+		let selection = window.getSelection().getRangeAt(0)
+		console.log(selection)
+		if (selection) {
+			format(button.id, selection, button.dataset.elementType)
+			console.log(currentSelection.startContainer.tagName);
+		}
+	})
+})
 
 const extensions = document.getElementById("top").childNodes;
 extensions.forEach((extension) => {
 	extension.addEventListener("click", () => {
-		if (extension.dataset.selected == true) {
+		if (extension.dataset.selected === "true") {
 			extension.dataset.selected = false;
 			//console.log(document.getElementById(`${currentExtension}-div`))
 			document.getElementById(`${currentExtension}-div`).dataset.visible = false;
 			currentExtension = ""
 			mainDoc.dataset.full = true;
 			extensionDiv.dataset.visible = false;
+			titleDiv.innerText = ""
 			//extensionDiv.innerText="he"
 			//extensionDiv.dataset.mode = extension.id
 			document.getElementById("open-editors").dataset.full = true;
@@ -104,6 +123,7 @@ extensions.forEach((extension) => {
 		document.getElementById(`${currentExtension}-div`).dataset.visible = true;
 		//console.log(currentExtension)
 		extensionDiv.dataset.visible = true;
+		titleDiv.innerText = currentExtension
 		mainDoc.dataset.full = false;
 		document.getElementById("open-editors").dataset.full = false;
 		let id = extension.id;
@@ -143,23 +163,27 @@ document.addEventListener("keydown", (event) => {
 
 	if (event.ctrlKey) {
 		//event.preventDefault();
-		const selection = window.getSelection().getRangeAt(0);
+		const select = window.getSelection()
+		const selection = select.getRangeAt(0);
 
 		switch (event.key) {
 			case keyBinds.bold:
 				event.preventDefault();
 				format("bold", selection, "bold");
 				updateFomat();
+				currentSelection = undefined
 				break;
 
 			case keyBinds.italics:
 				event.preventDefault();
 				format("em", selection, "italic");
+				currentSelection = undefined;
 				break;
 
 			case keyBinds.underline:
 				event.preventDefault();
 				format("u", selection, "underline");
+				currentSelection = undefined;
 				break;
 
 			case keyBinds.undo:
@@ -184,8 +208,14 @@ document.addEventListener("keydown", (event) => {
 				//console.log("Not Implemented");
 				break;
 		}
+
 	}
 });
+
+document.addEventListener("mouseup", () => {
+	currentSelection = window.getSelection().getRangeAt(0)
+	console.log(currentSelection)
+})
 
 document.addEventListener("keyup", () => {
 	updateFomat();

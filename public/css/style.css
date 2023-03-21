@@ -1,5 +1,6 @@
 :root {
   --background-dark: #1e1d24;
+  --background-darker: #151419;
   --background-light: #22222a;
   --text-color: #cacaca;
   --background-mid: #ec1370;
@@ -31,15 +32,45 @@ span {
 
 }
 
+#extension > *[data-visible="true"] {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 5px;
+}
+
+#extension-name {
+  height: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.format-button {
+  width: 2rem;
+  height: 2rem;
+  border: var(--background-light), solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--background-darker);
+  font-size: 1.5rem;
+  cursor: pointer;
+  border-radius: 25%;
+}
+
+.format-button:hover {
+  color: var(--background-mid);
+}
+
 *[data-visible="false"] {
   display: none;
 }
 
-/* .bold { font-weight: bold;} */
+#bold { font-weight: bold;}
 
-/* .em { font-style: italic;}
+#em { font-style: italic;}
 
-.u { text-decoration: underline;} */
+#u { text-decoration: underline;}
 
 .utilities {
   background-color: var(--background-light);
