@@ -2,7 +2,6 @@ var states = [];
 var currentState = 0;
 var mainDoc = document.getElementById("main");
 var currentExtension = "";
-var currentSelection
 
 function setup() {
 	var previousState = mainDoc.innerHTML;
@@ -20,10 +19,15 @@ const keyBinds = {
 };
 
 const dataProperties = {
-	bold: ["font-weight", "bold"],
+	bold : ["font-weight", "bold"],
 	em: ["font-style", "italic"],
 	u: ["text-decoration", "underline"],
 };
+
+const extensionDivs = {
+
+	
+}
 
 var extensionDiv = document.createElement("div");
 
@@ -56,15 +60,62 @@ extensionDiv.appendChild(formatDiv)
 
 extensionDiv.dataset.visible = false;
 
-var testDiv = document.createElement("div")
+var fileDiv = document.createElement("div")
 
-testDiv.innerText = "heelo"
+fileDiv.id = "file-div"
 
-testDiv.id = "file-div"
+document.getElementById("file").addEventListener("click", async () => {
+	fetch("http://localhost:8008/files", {
+		Headers: {
+			"Content-Type": "application/x-www-form-urlencoded",
+		},
+	})
+	.then((res) => res.json())
+	.then((body) => {body.children.forEach((child) => {parseFile(child, document.getElementById("file-div"), 0);})});
+});
 
-testDiv.dataset.visible = false
+function parseFile(file, nodeRef, depth) {
+	
+	if (file.children) {
+		var newNode = document.createElement("div")
+		newNode.dataset.name = file.name;
+		newNode.dataset.type = "dir"
+		newNode.dataset.expanded = false;
+		newNode.style.paddingLeft = `${depth * 10}px`;
+		newNode.style.zIndex = `${depth}`;
+		newNode.addEventListener("click", (e) => {
+			e.stopPropagation()
+			console.log(typeof newNode.dataset.expanded)
+			newNode.dataset.expanded = newNode.dataset.expanded === "false"
+		})
+		console.log(`path: ${file.path}, name: ${file.name}`)
+		file.children.forEach((element) => {
+			parseFile(element, newNode, depth + 1)
+		nodeRef.appendChild(newNode)
+		})
+		
+	} else {
+		var newNode1 = document.createElement("div");
+		newNode1.dataset.type = "file"
+		newNode1.dataset.name = file.name;
+		newNode1.style.paddingLeft = `${depth * 10}px`
+		newNode1.style.zIndex = `${depth}`;
+		console.log(newNode1.style.paddingLeft)
+		if (depth > 0) {
+			newNode1.dataset.visible = true;
+		} else {
+			newNode1.dataset.visible = true;
+		}
+		nodeRef.appendChild(newNode1)
+		console.log(`path: ${file.path}, name: ${file.name}`);
+	}
 
-extensionDiv.appendChild(testDiv)
+}
+
+
+fileDiv.dataset.visible = false
+
+extensionDiv.appendChild(fileDiv)
 
 
 document
@@ -89,10 +140,10 @@ formatWraper.forEach((button) => {
 	button.addEventListener("mousedown", (e) => {
 		e.preventDefault();
 		let selection = window.getSelection().getRangeAt(0)
-		console.log(selection)
-		if (selection) {
+		//console.log(selection.startContainer.parentElement.tagName !== "DIV")
+		if (selection.startContainer.parentElement.tagName !== "DIV") {
+			//console.log("lmo")
 			format(button.id, selection, button.dataset.elementType)
-			console.log(currentSelection.startContainer.tagName);
 		}
 	})
 })
@@ -171,19 +222,16 @@ document.addEventListener("keydown", (event) => {
 				event.preventDefault();
 				format("bold", selection, "bold");
 				updateFomat();
-				currentSelection = undefined
 				break;
 
 			case keyBinds.italics:
 				event.preventDefault();
 				format("em", selection, "italic");
-				currentSelection = undefined;
 				break;
 
 			case keyBinds.underline:
 				event.preventDefault();
 				format("u", selection, "underline");
-				currentSelection = undefined;
 				break;
 
 			case keyBinds.undo:
@@ -211,11 +259,6 @@ document.addEventListener("keydown", (event) => {
 
 	}
 });
-
-document.addEventListener("mouseup", () => {
-	currentSelection = window.getSelection().getRangeAt(0)
-	console.log(currentSelection)
-})
 
 document.addEventListener("keyup", () => {
 	updateFomat();
@@ -624,7 +667,7 @@ function format(elementType, selection, data) {
 
 		//select.addRange(newRange)
 
-		selection.collapse(false);
+		//selection.collapse(false);
 
 		console.log(indexStart, indexEnd, childnodesStart, childnodesEnd);
 	}

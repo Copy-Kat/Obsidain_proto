@@ -45,6 +45,19 @@ span {
   align-items: center;
 }
 
+#file-div {
+  display:flex;
+  flex-direction: column;
+}
+
+div::before {
+  content: attr(data-name);
+}
+
+div[data-expanded="false"] > div {
+  display: none;
+}
+
 .format-button {
   width: 2rem;
   height: 2rem;
