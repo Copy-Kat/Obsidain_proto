@@ -71,7 +71,10 @@ document.getElementById("file").addEventListener("click", async () => {
 		},
 	})
 	.then((res) => res.json())
-	.then((body) => {body.children.forEach((child) => {parseFile(child, document.getElementById("file-div"), 0);})});
+	.then((body) => {
+		document.getElementById("file-div").textContent = ""
+		body.children.forEach((child) => {parseFile(child, document.getElementById("file-div"), 0);})
+	});
 });
 
 function parseFile(file, nodeRef, depth) {
@@ -96,22 +99,20 @@ function parseFile(file, nodeRef, depth) {
 		
 	} else {
 		var newNode1 = document.createElement("div");
-		newNode1.dataset.type = "file"
+		newNode1.dataset.type = "file";
 		newNode1.dataset.name = file.name;
-		newNode1.style.paddingLeft = `${depth * 10}px`
+		newNode1.style.paddingLeft = `${depth * 10}px`;
 		newNode1.style.zIndex = `${depth}`;
-		console.log(newNode1.style.paddingLeft)
-		if (depth > 0) {
-			newNode1.dataset.visible = true;
-		} else {
-			newNode1.dataset.visible = true;
-		}
+		
+		newNode1.addEventListener("click", (e) => {
+			e.stopPropagation();
+
+		})
+
 		nodeRef.appendChild(newNode1)
 		console.log(`path: ${file.path}, name: ${file.name}`);
 	}
-
 }
-
 
 fileDiv.dataset.visible = false
 

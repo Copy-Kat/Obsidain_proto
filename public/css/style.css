@@ -45,9 +45,15 @@ span {
   align-items: center;
 }
 
-#file-div {
+
+
+#file-div[data-visible="true"] {
   display:flex;
   flex-direction: column;
+}
+
+*[data-visible="false"] {
+  display: none;
 }
 
 div::before {
@@ -75,9 +81,7 @@ div[data-expanded="false"] > div {
   color: var(--background-mid);
 }
 
-*[data-visible="false"] {
-  display: none;
-}
+
 
 #bold { font-weight: bold;}
 
