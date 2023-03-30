@@ -9,12 +9,15 @@ function setup() {
 	states.push(previousState);
 }
 
+var docs = {}
+
 const keyBinds = {
 	bold: "b",
 	italics: "i",
 	underline: "u",
 	undo: "z",
 	highlight: "i",
+	save: "s",
 	test: "f",
 };
 
@@ -65,11 +68,7 @@ var fileDiv = document.createElement("div")
 fileDiv.id = "file-div"
 
 document.getElementById("file").addEventListener("click", async () => {
-	fetch("http://localhost:8008/files", {
-		Headers: {
-			"Content-Type": "application/x-www-form-urlencoded",
-		},
-	})
+	fetch("http://localhost:8008/files")
 	.then((res) => res.json())
 	.then((body) => {
 		document.getElementById("file-div").textContent = ""
@@ -80,10 +79,12 @@ document.getElementById("file").addEventListener("click", async () => {
 function parseFile(file, nodeRef, depth) {
 	
 	if (file.children) {
+		//console.log(file)
 		var newNode = document.createElement("div")
 		newNode.dataset.name = file.name;
 		newNode.dataset.type = "dir"
 		newNode.dataset.expanded = false;
+		newNode.dataset.path = file.path;
 		newNode.style.paddingLeft = `${depth * 10}px`;
 		newNode.style.zIndex = `${depth}`;
 		newNode.addEventListener("click", (e) => {
@@ -91,26 +92,33 @@ function parseFile(file, nodeRef, depth) {
 			console.log(typeof newNode.dataset.expanded)
 			newNode.dataset.expanded = newNode.dataset.expanded === "false"
 		})
-		console.log(`path: ${file.path}, name: ${file.name}`)
+		//console.log(`path: ${file.path}, name: ${file.name}`)
+		if (file.children.length == 0) {
+			nodeRef.appendChild(newNode);
+			return
+		}
 		file.children.forEach((element) => {
 			parseFile(element, newNode, depth + 1)
 		nodeRef.appendChild(newNode)
+		console.log(nodeRef.childNodes)
 		})
 		
 	} else {
 		var newNode1 = document.createElement("div");
 		newNode1.dataset.type = "file";
 		newNode1.dataset.name = file.name;
+		newNode1.dataset.path = file.path;
 		newNode1.style.paddingLeft = `${depth * 10}px`;
 		newNode1.style.zIndex = `${depth}`;
 		
 		newNode1.addEventListener("click", (e) => {
 			e.stopPropagation();
-
+			let url = "http://localhost:8008/read/" + newNode1.dataset.path.replaceAll("/", "%2F")
+			fetch(url).then((res) => res.text()).then((body) => mainDoc.innerHTML = body)
 		})
 
 		nodeRef.appendChild(newNode1)
-		console.log(`path: ${file.path}, name: ${file.name}`);
+		//console.log(`path: ${file.path}, name: ${file.name}`);
 	}
 }
 
@@ -235,6 +243,11 @@ document.addEventListener("keydown", (event) => {
 				format("u", selection, "underline");
 				break;
 
+			case keyBinds.save:
+				event.preventDefault();
+				save()
+				break;
+
 			case keyBinds.undo:
 				event.preventDefault();
 				currentState--;
@@ -260,6 +273,18 @@ document.addEventListener("keydown", (event) => {
 
 	}
 });
+
+function save(){
+	let body = document.getElementById("main").innerHTML.trim();
+	let path = "Files/test/test3.html";
+	fetch("http://localhost:8008/write", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+		},
+		body: `body=${body}&path=${path}`
+	});
+}
 
 document.addEventListener("keyup", () => {
 	updateFomat();
