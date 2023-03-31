@@ -81,7 +81,13 @@ div[data-expanded="false"] > div {
   color: var(--background-mid);
 }
 
-
+.open-file {
+  width: 50px;
+  height: auto;
+  display: flex;
+  align-items: start;
+  justify-content: center;
+}
 
 #bold { font-weight: bold;}
 
@@ -166,4 +172,8 @@ p {
   background-color: var(--background-dark);
   grid-row: 1;
   grid-column: 3 / -1;
+  display: flex;
+  flex-direction: row;
 }
+
+
