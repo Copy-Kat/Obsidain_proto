@@ -1,4 +1,4 @@
-import { dataProperties } from "./consts.js";
+import { dataProperties, fileExtensions } from "./consts.js";
 
 var mainDoc = document.getElementById("main");
 
@@ -385,3 +385,47 @@ export function format(elementType, selection, data) {
 	});
 }
 
+export function switchFile(e, fileName, filePath){
+
+	e.stopPropagation();
+
+	if (openFiles.includes(fileName)) {
+		console.log(openFiles)
+		currentFileIndex = openFiles.indexOf(fileName)
+		document.getElementById("main").innerHTML = saveStates[currentFileIndex].at(0)
+		return
+	}
+
+	var openFile = document.createElement("div");
+
+	let extension = fileExtensions[fileName.split(".").at(-1)];
+
+	console.log(fileName.split(".").at(-1))
+
+	openFile.innerHTML = `<div><i class = "nf ${extension[0]}" style="color: ${extension[1]}; font-size: 1.1rem"></i> <div>${fileName}</div></div>`
+
+	let close = document.createElement("div");
+
+	close.innerHTML = "x"
+
+	openFile.firstChild.appendChild(close)
+
+	openFile.classList.add("open-file")
+	openFile.dataset.name = fileName
+	openFile.dataset.path = filePath
+
+	openFile.addEventListener("click", (e) => {switchFile(e, fileName, filePath)})
+
+	openFile.dataset.open = true
+
+	document.getElementById("open-editors").appendChild(openFile)
+	
+	openFiles.push(fileName);
+	paths.push(filePath);
+
+	currentFileIndex = openFiles.length - 1;
+	console.log(currentFileIndex)
+
+	let url = "http://localhost:8008/read/" + filePath.replaceAll("/", "%2F")
+	fetch(url).then((res) => res.text()).then((body) => {mainDoc.innerHTML = body}).then(() => setup())
+}

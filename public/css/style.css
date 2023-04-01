@@ -61,7 +61,7 @@ span {
   display: none;
 }
 
-div::before {
+div[data-type]::before {
   content: attr(data-name);
 }
 
@@ -86,12 +86,23 @@ div[data-expanded="false"] > div {
   color: var(--background-mid);
 }
 
-.open-file {
-  width: fit-content;
-  height: auto;
+.open-file > div {
+  width: max-content;
+  height: 100%;
+  font-size: 1rem;
   display: flex;
-  align-items: start;
-  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+*[data-open="true"] {
+  background-color: var(--background-light);
+}
+
+.open-file > div > * {
+  padding-right: 5px;
 }
 
 #bold { font-weight: bold;}
@@ -121,12 +132,10 @@ div[data-expanded="false"] > div {
   align-items: flex-end;
 }
 
-.top svg, .bot svg{
+.top i, .bot i{
   padding: 10px;
   padding-left: 8px;
-  width: 20px;
-  height: 20px;
-  fill: var(--text-color);
+  font-size: 1.2rem;
 }
 
 .main {
@@ -157,14 +166,15 @@ div[data-expanded="false"] > div {
   outline: none;
 }
 
-svg:hover {
-  fill: var(--background-mid);
-}
 
-svg[data-selected="true"]{
-  fill: var(--background-mid);
+i[data-selected="true"]{
+  color: var(--background-mid);
   box-sizing: content-box;
   border-left: solid 2px var(--background-mid);
+}
+
+i:hover {
+  color: var(--background-mid);
 }
 
 p {

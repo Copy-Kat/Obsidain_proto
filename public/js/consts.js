@@ -13,3 +13,7 @@ export const keyBinds = {
 	save: "s",
 	test: "f",
 };
+
+export const fileExtensions = {
+	html : ["nf nf-cod-code", "#cb6e31"]
+}

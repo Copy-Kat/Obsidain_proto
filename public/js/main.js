@@ -1,5 +1,5 @@
 import { updateFomat, tab, format } from "./utils.js";
-import { dataProperties, keyBinds } from "./consts.js";
+import { dataProperties, keyBinds, fileExtensions } from "./consts.js";
 
 var states = [];
 var currentState = 0;
@@ -7,21 +7,17 @@ var mainDoc = document.getElementById("main");
 var currentExtension = "";
 
 function setup() {
-	
-	var previousState = mainDoc.innerHTML;
 
-	states.push(previousState);
-}
+	saveStates.push([document.getElementById("main").innerHTML])
 
-var docs = {}
-
-const extensionDivs = {
 }
 
 var openFiles = []
 var paths = []
 var saveStates = []
-var currentFileIndex = ""
+var currentFileIndex = -1
+
+console.log(saveStates)
 
 var extensionDiv = document.createElement("div");
 
@@ -91,7 +87,6 @@ function parseFile(file, nodeRef, depth) {
 		file.children.forEach((element) => {
 			parseFile(element, newNode, depth + 1)
 		nodeRef.appendChild(newNode)
-		console.log(nodeRef.childNodes)
 		})
 		
 	} else {
@@ -102,28 +97,56 @@ function parseFile(file, nodeRef, depth) {
 		newNode1.style.paddingLeft = `${depth * 10}px`;
 		newNode1.style.zIndex = `${depth}`;
 		
-		newNode1.addEventListener("click", (e) => {
-			e.stopPropagation();
-
-			var openFile = document.createElement("div");
-
-			openFile.classList.add("open-file")
-			openFile.dataset.name = file.name
-
-			document.getElementById("open-editors").appendChild(openFile)
-			
-			openFiles.push(file.name);
-			paths.push(file.path);
-
-			let url = "http://localhost:8008/read/" + newNode1.dataset.path.replaceAll("/", "%2F")
-			fetch(url).then((res) => res.text()).then((body) => {mainDoc.innerHTML = body; saveStates.push([body])})
-
-
-		})
+		newNode1.addEventListener("click", (e) => {switchFile(e, file.name, file.path)})
 
 		nodeRef.appendChild(newNode1)
 		//console.log(`path: ${file.path}, name: ${file.name}`);
 	}
+}
+
+function switchFile(e, fileName, filePath){
+
+	e.stopPropagation();
+
+	if (openFiles.includes(fileName)) {
+		console.log(openFiles)
+		currentFileIndex = openFiles.indexOf(fileName)
+		document.getElementById("main").innerHTML = saveStates[currentFileIndex].at(0)
+		return
+	}
+
+	var openFile = document.createElement("div");
+
+	let extension = fileExtensions[fileName.split(".").at(-1)];
+
+	console.log(fileName.split(".").at(-1))
+
+	openFile.innerHTML = `<div><i class = "nf ${extension[0]}" style="color: ${extension[1]}; font-size: 1.1rem"></i> <div>${fileName}</div></div>`
+
+	let close = document.createElement("div");
+
+	close.innerHTML = "x"
+
+	openFile.firstChild.appendChild(close)
+
+	openFile.classList.add("open-file")
+	openFile.dataset.name = fileName
+	openFile.dataset.path = filePath
+
+	openFile.addEventListener("click", (e) => {switchFile(e, fileName, filePath)})
+
+	openFile.dataset.open = true
+
+	document.getElementById("open-editors").appendChild(openFile)
+	
+	openFiles.push(fileName);
+	paths.push(filePath);
+
+	currentFileIndex = openFiles.length - 1;
+	console.log(currentFileIndex)
+
+	let url = "http://localhost:8008/read/" + filePath.replaceAll("/", "%2F")
+	fetch(url).then((res) => res.text()).then((body) => {mainDoc.innerHTML = body}).then(() => setup())
 }
 
 fileDiv.dataset.visible = false
@@ -165,8 +188,10 @@ extensions.forEach((extension) => {
 			return;
 		}
 		extension.dataset.selected = true;
+		
 		if (currentExtension != "") {
 			document.getElementById(`${currentExtension}-div`).dataset.visible = false;
+			document.getElementById(currentExtension).dataset.selected = false;
 		}
 		
 		currentExtension = extension.id
@@ -177,14 +202,7 @@ extensions.forEach((extension) => {
 		titleDiv.innerText = currentExtension
 		mainDoc.dataset.full = false;
 		document.getElementById("open-editors").dataset.full = false;
-		let id = extension.id;
-		let childNodes = document.getElementById("top").childNodes;
-		childNodes.forEach((node) => {
-			if (node.id != id && node instanceof SVGElement) {
-				//console.log(node)
-				node.dataset.selected = false;
-			}
-		});
+
 	});
 });
 
@@ -197,6 +215,7 @@ document.addEventListener("keydown", (event) => {
 			break;
 
 		default:
+			update()
 			break;
 	}
 
@@ -228,14 +247,10 @@ document.addEventListener("keydown", (event) => {
 
 			case keyBinds.undo:
 				event.preventDefault();
-				currentState--;
-				if (currentState < 0) {
-					currentState = 0;
-					break;
-				}
-				let body = mainDoc;
-				body.innerHTML = states[currentState];
-				states.pop();
+				if (saveStates[currentFileIndex].length < 2) break;
+				mainDoc.innerHTML = saveStates[currentFileIndex].at(-2)
+				saveStates[currentFileIndex].pop()
+
 				break;
 
 			case keyBinds.test:
@@ -243,12 +258,29 @@ document.addEventListener("keydown", (event) => {
 				break;
 
 			default:
-				//console.log("Not Implemented");
 				break;
 		}
 
 	}
 });
+
+function update(){
+
+	updateFomat();
+
+	let newState = document.getElementById("main").innerHTML;
+
+
+	//console.log(newState)
+	let previousState = saveStates[currentFileIndex].at(-1);
+	//console.log(newState, previousState)
+
+	if (newState != previousState) {
+		saveStates[currentFileIndex].push(newState)
+		// console.log(states)
+
+	}
+}
 
 function save(){
 	let body = document.getElementById("main").innerHTML.trim();
@@ -262,22 +294,5 @@ function save(){
 	});
 }
 
-document.addEventListener("keyup", () => {
-	updateFomat();
-
-	let newState = mainDoc.innerHTML;
-
-	//console.log(newState)
-	let previousState = states[currentState];
-	//console.log(newState, previousState)
-
-	if (newState != previousState) {
-		states.push(newState);
-		currentState++;
-		// console.log(states)
-	}
-});
 
 document.getElementById("main").addEventListener("click", () => updateFomat());
-
-setup();
