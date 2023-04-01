@@ -9,7 +9,8 @@ const port = 8008
 
 const FilePath = path.join(__dirname, "Files");
 
-app.use(express.urlencoded({extended: true}))
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({limit: '50mb', extended: true}));
 app.use(express.static(path.join(__dirname, "public")))
 
 app.set("view engine", "ejs")

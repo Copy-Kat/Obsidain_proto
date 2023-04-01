@@ -1,5 +1,5 @@
 import { updateFomat, tab, format } from "./utils.js";
-import { dataProperties, keyBinds, fileExtensions } from "./consts.js";
+import { dataProperties, keyBinds, fileExtensions, startScreen } from "./consts.js";
 
 var states = [];
 var currentState = 0;
@@ -110,9 +110,17 @@ function switchFile(e, fileName, filePath){
 
 	if (openFiles.includes(fileName)) {
 		console.log(openFiles)
+		document.querySelectorAll(`[data-name="${openFiles[currentFileIndex]}"]`)[1].dataset.open = false
 		currentFileIndex = openFiles.indexOf(fileName)
 		document.getElementById("main").innerHTML = saveStates[currentFileIndex].at(0)
+		document.querySelectorAll(`[data-name="${openFiles[currentFileIndex]}"]`)[1].dataset.open = true
+		console.log(openFiles)
 		return
+	}
+
+	if (currentFileIndex != -1) {
+		console.log(document.querySelectorAll(`[data-name="${openFiles[currentFileIndex]}"]`))
+		document.querySelectorAll(`[data-name="${openFiles[currentFileIndex]}"]`)[1].dataset.open = false
 	}
 
 	var openFile = document.createElement("div");
@@ -126,6 +134,8 @@ function switchFile(e, fileName, filePath){
 	let close = document.createElement("div");
 
 	close.innerHTML = "x"
+
+	close.addEventListener("click", (e) => {closeFile(e, openFile, fileName)})
 
 	openFile.firstChild.appendChild(close)
 
@@ -147,6 +157,32 @@ function switchFile(e, fileName, filePath){
 
 	let url = "http://localhost:8008/read/" + filePath.replaceAll("/", "%2F")
 	fetch(url).then((res) => res.text()).then((body) => {mainDoc.innerHTML = body}).then(() => setup())
+
+	console.log(openFiles)
+}
+
+function closeFile(e, openFile, name) {
+
+	e.stopPropagation()
+
+	console.log(name)
+	
+	let removeIndex = openFiles.indexOf(name)
+
+	console.log(removeIndex)
+
+	openFiles.splice(removeIndex, 1);
+	paths.splice(removeIndex, 1);
+	saveStates.splice(removeIndex, 1);
+
+	console.log(openFiles)
+
+	currentFileIndex = openFiles.length - 1
+
+	openFile.remove();
+
+	if (currentFileIndex > -1) {document.getElementById("main").innerHTML = saveStates[currentFileIndex].at(-1); return;}
+	else {document.getElementById("main").innerHTML = startScreen}
 }
 
 fileDiv.dataset.visible = false
@@ -283,8 +319,8 @@ function update(){
 }
 
 function save(){
-	let body = document.getElementById("main").innerHTML.trim();
-	let path = "Files/test/test3.html";
+	let body = document.getElementById("main").innerHTML;
+	let path = paths[currentFileIndex];
 	fetch("http://localhost:8008/write", {
 		method: "POST",
 		headers: {
