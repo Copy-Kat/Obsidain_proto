@@ -25,6 +25,11 @@ span {
   text-decoration: var(--u);
 }
 
+
+.file {
+  color: var(--background-mid);
+}
+
 #extension {
   grid-column: 2;
   grid-row: 1 / -1;
@@ -82,7 +87,7 @@ div[data-expanded="false"] > div {
 }
 
 .open-file {
-  width: 50px;
+  width: fit-content;
   height: auto;
   display: flex;
   align-items: start;

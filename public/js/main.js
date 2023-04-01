@@ -7,6 +7,7 @@ var mainDoc = document.getElementById("main");
 var currentExtension = "";
 
 function setup() {
+	
 	var previousState = mainDoc.innerHTML;
 
 	states.push(previousState);
@@ -14,13 +15,7 @@ function setup() {
 
 var docs = {}
 
-
-
-
-
 const extensionDivs = {
-
-	
 }
 
 var openFiles = []
@@ -193,18 +188,6 @@ extensions.forEach((extension) => {
 	});
 });
 
-// document.getElementById("bold").addEventListener("click", () => {
-//     format("STRONG", "<strong>", "</strong>");
-// });
-
-// document.getElementById("italic").addEventListener("click", () => {
-//     format("EM", "<em>", "</em>");
-// });
-
-// document.getElementById("underline").addEventListener("click", () => {
-//     format("U", "<u>", "</u>");
-// });
-
 // INPUT HANDLING
 document.addEventListener("keydown", (event) => {
 	switch (event.key) {
@@ -296,12 +279,5 @@ document.addEventListener("keyup", () => {
 });
 
 document.getElementById("main").addEventListener("click", () => updateFomat());
-
-
-
-
-
-// TEXT FORMATING
-
 
 setup();

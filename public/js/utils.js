@@ -3,7 +3,6 @@ import { dataProperties } from "./consts.js";
 var mainDoc = document.getElementById("main");
 
 export function updateFomat() {
-	//console.log("hi")
 
 	const [pos, node] = getCaretPos();
 
@@ -32,6 +31,7 @@ function getCaretPos() {
 }
 
 export function tab() {
+
 	const [pos, node] = getCaretPos();
 
 	const text = node.innerText;
@@ -57,50 +57,43 @@ export function tab() {
 }
 
 export function format(elementType, selection, data) {
-	// get the text string of the editor
+
 	var text, text1;
 	var multi_para = false;
 	var undo = false;
 
-	// get selection
-	// const selection = window.getSelection().getRangeAt(0);
-
-	var newRange = selection.cloneRange();
-
-	// // get containers
+	// get containers
 	const startContainer = selection.startContainer;
 	const endContainer = selection.endContainer;
 
+    // get classes
 	const startContainerClasses = startContainer.parentElement.classList;
 	const endContainerClasses = endContainer.parentElement.classList;
 
+    // get offsets
 	var startOffset = selection.startOffset;
 	var endOffset = selection.endOffset;
 
-	//console.log(startContainer.parentElement.classList , endContainer.parentElement.classNames)
-
-	if (startContainer === endContainer) {
-		var textArea = startContainer.parentElement.parentElement;
-	} else if (selection.commonAncestorContainer.tagName == "P") {
-		var textArea = selection.commonAncestorContainer;
-	} else {
+	if (startContainer === endContainer) { // same span
+		var textArea = startContainer.parentElement.parentElement; 
+	} else if (selection.commonAncestorContainer.tagName == "P") { // same paraghaph
+		var textArea = selection.commonAncestorContainer; 
+	} else { // multiple paragraphs
 		multi_para = true;
 	}
 
 	if (!multi_para) {
-		// get childnodes
+
 		var childnodes = textArea.childNodes;
 
-		// assumption: if not span then depth 1
+        // get index pos of start/end nodes
 		var indexStart = Array.from(childnodes).indexOf(startContainer.parentElement);
 
 		var indexEnd = Array.from(childnodes).indexOf(endContainer.parentElement);
 
-		// case 1: single line no boling
 		if (indexStart === indexEnd) {
-			// console.log("1")
-			// get text
-			text = startContainer.parentElement.innerText;
+
+			text = startContainer.parentElement.innerText; // get text to avoid whitespace formating
 
 			const newSpan = document.createElement("span");
 			const formatedSpan = document.createElement("span");
@@ -114,32 +107,31 @@ export function format(elementType, selection, data) {
 			textArea.insertBefore(formatedSpan, startContainer.parentElement);
 
 			if (startContainerClasses.length != 0) {
+
 				formatedSpan.classList = startContainerClasses;
 				formatedSpan.style.cssText = startContainer.parentElement.style.cssText;
+
 				newSpan.classList = startContainerClasses;
 				newSpan.style.cssText = startContainer.parentElement.style.cssText;
+
 			}
 
-			if (
-				startContainerClasses.contains(elementType + "-" + data) &&
-				endContainerClasses.contains(elementType + "-" + data)
-			) {
-				undo = true;
-				console.log(undo);
-			}
+			if (startContainerClasses.contains(elementType + "-" + data) && endContainerClasses.contains(elementType + "-" + data)) {
 
-			if (undo) {
-				formatedSpan.classList.remove(elementType + "-" + data);
+                formatedSpan.classList.remove(elementType + "-" + data);
 				formatedSpan.style.setProperty("--" + elementType, "inherit");
-			} else {
+
+			}  else {
+
 				formatedSpan.classList.add(elementType + "-" + data);
 				formatedSpan.style.setProperty("--" + elementType, data);
 			}
 
-			startContainer.parentElement.innerHTML = text
-				.slice(endOffset)
-				.replaceAll(" ", "&nbsp;");
+			startContainer.parentElement.innerHTML = text.slice(endOffset).replaceAll(" ", "&nbsp;");
+
+
 		} else if (indexStart + 1 === indexEnd) {
+
 			text = startContainer.parentElement.innerText;
 			text1 = endContainer.parentElement.innerText;
 
@@ -147,63 +139,53 @@ export function format(elementType, selection, data) {
 			const formatedspan2 = document.createElement("span");
 
 			formatedspan1.innerHTML = text.slice(startOffset).replaceAll(" ", "&nbsp;");
-			formatedspan2.innerHTML = text1
-				.slice(0, endOffset)
-				.replaceAll(" ", "&nbsp;");
+			formatedspan2.innerHTML = text1.slice(0, endOffset).replaceAll(" ", "&nbsp;");
 
 			if (startContainerClasses.length != 0) {
+
 				formatedspan1.classList = startContainerClasses;
 				formatedspan1.style.cssText = startContainer.parentElement.style.cssText;
 			}
+
 			if (endContainerClasses.length != 0) {
+
 				formatedspan2.classList = endContainerClasses;
 				formatedspan2.style.cssText = endContainer.parentElement.style.cssText;
 			}
 
-			if (
-				startContainerClasses.contains(elementType + "-" + data) &&
-				endContainerClasses.contains(elementType + "-" + data)
-			) {
-				undo = true;
-				console.log(undo);
-			}
+			if (startContainerClasses.contains(elementType + "-" + data) && endContainerClasses.contains(elementType + "-" + data)) {
 
-			//console.log(startContainerClasses, endContainerClasses)
-
-			if (undo) {
-				formatedspan1.classList.remove(elementType + "-" + data);
+                formatedspan1.classList.remove(elementType + "-" + data);
 				formatedspan2.classList.remove(elementType + "-" + data);
+
 				formatedspan1.style.setProperty("--" + elementType, "inherit");
 				formatedspan2.style.setProperty("--" + elementType, "inherit");
+
 			} else {
+
 				formatedspan1.classList.add(elementType + "-" + data);
 				formatedspan2.classList.add(elementType + "-" + data);
+
 				formatedspan1.style.setProperty("--" + elementType, data);
 				formatedspan2.style.setProperty("--" + elementType, data);
+
 			}
 
 			textArea.insertBefore(formatedspan1, endContainer.parentElement);
 			textArea.insertBefore(formatedspan2, endContainer.parentElement);
 
-			startContainer.parentElement.innerHTML = text
-				.slice(0, startOffset)
-				.replaceAll(" ", "&nbsp;");
-			endContainer.parentElement.innerHTML = text1
-				.slice(endOffset)
-				.replaceAll(" ", "&nbsp;");
+			startContainer.parentElement.innerHTML = text.slice(0, startOffset).replaceAll(" ", "&nbsp;");
+			endContainer.parentElement.innerHTML = text1.slice(endOffset).replaceAll(" ", "&nbsp;");
+                
 		} else {
+
 			text = startContainer.parentElement.innerText;
 			text1 = endContainer.parentElement.innerText;
 
-			if (
-				startContainerClasses.contains(elementType + "-" + data) &&
-				endContainerClasses.contains(elementType + "-" + data)
-			) {
-				undo = true;
-				console.log(undo);
-			}
+			if (startContainerClasses.contains(elementType + "-" + data) && endContainerClasses.contains(elementType + "-" + data)) undo = true;
 
 			for (let index = indexStart + 1; index < indexEnd; index++) {
+
 				if (!childnodes[index].classList.contains(elementType + "-" + data)) {
 					undo = false;
 					break;
@@ -211,13 +193,14 @@ export function format(elementType, selection, data) {
 			}
 
 			for (let index = indexStart + 1; index < indexEnd; index++) {
-				if (
-					undo &&
-					childnodes[index].classList.contains(elementType + "-" + data)
-				) {
+
+				if (undo && [index].classList.contains(elementType + "-" + data)) {
+
 					childnodes[index].classList.remove(elementType + "-" + data);
 					childnodes[index].style.setProperty("--" + elementType, "inherit");
+
 				} else {
+
 					childnodes[index].classList.add(elementType + "-" + data);
 					childnodes[index].style.setProperty("--" + elementType, data);
 				}
@@ -227,9 +210,7 @@ export function format(elementType, selection, data) {
 			const formatedspan2 = document.createElement("span");
 
 			formatedspan1.innerHTML = text.slice(startOffset).replaceAll(" ", "&nbsp;");
-			formatedspan2.innerHTML = text1
-				.slice(0, endOffset)
-				.replaceAll(" ", "&nbsp;");
+			formatedspan2.innerHTML = text1.slice(0, endOffset).replaceAll(" ", "&nbsp;");
 
 			if (startContainerClasses.length != 0) {
 				formatedspan1.classList = startContainerClasses;
@@ -241,31 +222,33 @@ export function format(elementType, selection, data) {
 			}
 
 			if (undo) {
+
 				formatedspan1.classList.remove(elementType + "-" + data);
 				formatedspan2.classList.remove(elementType + "-" + data);
+
 				formatedspan1.style.setProperty("--" + elementType, "inherit");
 				formatedspan2.style.setProperty("--" + elementType, "inherit");
+
 			} else {
+
 				formatedspan1.classList.add(elementType + "-" + data);
 				formatedspan2.classList.add(elementType + "-" + data);
+
 				formatedspan1.style.setProperty("--" + elementType, data);
 				formatedspan2.style.setProperty("--" + elementType, data);
+
 			}
 
 			textArea.insertBefore(formatedspan1, childnodes[indexStart + 1]);
 			textArea.insertBefore(formatedspan2, endContainer.parentElement);
 
-			startContainer.parentElement.innerHTML = text
-				.slice(0, startOffset)
-				.replaceAll(" ", "&nbsp;");
-			endContainer.parentElement.innerHTML = text1
-				.slice(endOffset)
-				.replaceAll(" ", "&nbsp;");
+			startContainer.parentElement.innerHTML = text.slice(0, startOffset).replaceAll(" ", "&nbsp;");
+			endContainer.parentElement.innerHTML = text1.slice(endOffset).replaceAll(" ", "&nbsp;");
 		}
-	} else {
-		const editorChilds = document.querySelectorAll("div.main>p");
 
-		console.log(startOffset, endOffset);
+	} else { // multi-paragraph formating
+
+		const editorChilds = document.querySelectorAll("div.main>p");
 
 		var parent1 = startContainer.parentElement.parentElement;
 		var parent2 = endContainer.parentElement.parentElement;
@@ -277,9 +260,7 @@ export function format(elementType, selection, data) {
 		var childnodesStart = parent1.childNodes;
 		var childnodesEnd = parent2.childNodes;
 
-		var indexStart = Array.from(childnodesStart).indexOf(
-			startContainer.parentElement
-		);
+		var indexStart = Array.from(childnodesStart).indexOf(startContainer.parentElement);
 
 		var indexEnd = Array.from(childnodesEnd).indexOf(endContainer.parentElement);
 
@@ -301,69 +282,74 @@ export function format(elementType, selection, data) {
 		formatedspan1.innerHTML = text.slice(startOffset).replaceAll(" ", "&nbsp;");
 		formatedspan2.innerHTML = text1.slice(0, endOffset).replaceAll(" ", "&nbsp;");
 
-		if (
-			startContainerClasses.contains(elementType + "-" + data) &&
-			endContainerClasses.contains(elementType + "-" + data)
-		) {
-			undo = true;
-			console.log(undo);
-		}
+		if (startContainerClasses.contains(elementType + "-" + data) && endContainerClasses.contains(elementType + "-" + data)) undo = true;
 
-		for (let index = indexStart + 1; index < childnodesStart.length; index++) {
+		for (let index = indexStart + 1; index < childnodesStart.length; index++) { // check all childnodes of the start para and maintain style accordingly
+
 			if (!childnodesStart[index].classList.contains(elementType + "-" + data)) {
+
 				undo = false;
 				break;
 			}
 		}
 
-		for (let index = 0; index < indexEnd; index++) {
+		for (let index = 0; index < indexEnd; index++) { // check all childnodes of the end para and maintain style accordingly
+
 			if (!childnodesEnd[index].classList.contains(elementType + "-" + data)) {
+
 				undo = false;
 				break;
 			}
 		}
 
-		for (let index = indexParentStart + 1; index <= indexParentEnd - 1; index++) {
+		for (let index = indexParentStart + 1; index <= indexParentEnd - 1; index++) { // check all childnodes of the middle paras and maintain style accordingly
+
 			editorChilds[index].childNodes.forEach((element) => {
-				if (!element.classList.contains(elementType + "-" + data)) {
-					undo = false;
-				}
+
+				if (!element.classList.contains(elementType + "-" + data)) undo = false;
+
 			});
 		}
 
 		if (undo) {
+
 			formatedspan1.classList.remove(elementType + "-" + data);
 			formatedspan2.classList.remove(elementType + "-" + data);
+
 			formatedspan1.style.setProperty("--" + elementType, "inherit");
 			formatedspan2.style.setProperty("--" + elementType, "inherit");
+
 		} else {
 			formatedspan1.classList.add(elementType + "-" + data);
 			formatedspan2.classList.add(elementType + "-" + data);
+
 			formatedspan1.style.setProperty("--" + elementType, data);
 			formatedspan2.style.setProperty("--" + elementType, data);
+
 		}
 
 		for (let index = indexStart + 1; index < childnodesStart.length; index++) {
-			if (
-				undo &&
-				childnodesStart[index].classList.contains(elementType + "-" + data)
-			) {
+
+			if (undo && childnodesStart[index].classList.contains(elementType + "-" + data)) {
+
 				childnodesStart[index].classList.remove(elementType + "-" + data);
 				childnodesStart[index].style.setProperty("--" + elementType, "inherit");
+
 			} else {
+
 				childnodesStart[index].classList.add(elementType + "-" + data);
 				childnodesStart[index].style.setProperty("--" + elementType, data);
 			}
 		}
 
 		for (let index = 0; index < indexEnd; index++) {
-			if (
-				undo &&
-				childnodesEnd[index].classList.contains(elementType + "-" + data)
-			) {
+			if (undo && childnodesEnd[index].classList.contains(elementType + "-" + data)) {
+				
 				childnodesEnd[index].classList.remove(elementType + "-" + data);
 				childnodesEnd[index].style.setProperty("--" + elementType, "inherit");
+
 			} else {
+
 				childnodesEnd[index].classList.add(elementType + "-" + data);
 				childnodesEnd[index].style.setProperty("--" + elementType, data);
 			}
@@ -372,14 +358,8 @@ export function format(elementType, selection, data) {
 		parent1.insertBefore(formatedspan1, childnodesStart[indexStart + 1]);
 		parent2.insertBefore(formatedspan2, endContainer.parentElement);
 
-		console.log(formatedspan1, formatedspan2);
-
-		startContainer.parentElement.innerHTML = text
-			.slice(0, startOffset)
-			.replaceAll(" ", "&nbsp;");
-		endContainer.parentElement.innerHTML = text1
-			.slice(endOffset)
-			.replaceAll(" ", "&nbsp;");
+		startContainer.parentElement.innerHTML = text.slice(0, startOffset).replaceAll(" ", "&nbsp;");
+		endContainer.parentElement.innerHTML = text1.slice(endOffset).replaceAll(" ", "&nbsp;");
 
 		for (let index = indexParentStart + 1; index <= indexParentEnd - 1; index++) {
 			editorChilds[index].childNodes.forEach((element) => {
@@ -392,20 +372,6 @@ export function format(elementType, selection, data) {
 				}
 			});
 		}
-
-		//const select = window.getSelection()
-
-		//newRange.setStart(startContainer.parentElement, startOffset)
-
-		//newRange.setEnd(endContainer.parentElement, endOffset)
-
-		//select.removeAllRanges()
-
-		//select.addRange(newRange)
-
-		//selection.collapse(false);
-
-		console.log(indexStart, indexEnd, childnodesStart, childnodesEnd);
 	}
 
 	// Clean up
@@ -417,6 +383,5 @@ export function format(elementType, selection, data) {
 			}
 		});
 	});
-
-	//console.log(mainDoc.childNodes)
 }
+
