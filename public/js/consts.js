@@ -1,3 +1,12 @@
+export var state = {
+
+	openFiles: [],
+	paths: [],
+	saveStates: [],
+	currentFileIndex : -1
+
+}
+
 export const dataProperties = {
 	bold: ["font-weight", "bold"],
 	em: ["font-style", "italic"],

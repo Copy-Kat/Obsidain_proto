@@ -1,19 +1,10 @@
 import { updateFomat, tab, format, FormatDiv} from "./extensions/format-extension.js";
-import { parseFile, save } from "./extensions/files-extension.js";
-import { dataProperties, keyBinds} from "./consts.js";
+import { parseFile, save, FileDiv } from "./extensions/files-extension.js";
+import { dataProperties, keyBinds, state} from "./consts.js";
 import { createWraperDiv } from "./utils.js";
 
 var mainDoc = document.getElementById("main");
 var currentExtension = "";
-
-export var state = {
-
-	openFiles: [],
-	paths: [],
-	saveStates: [],
-	currentFileIndex : -1
-
-}
 
 const extensionDiv = createWraperDiv("extension", false)
 
@@ -25,22 +16,9 @@ const formatDiv = new FormatDiv("format", dataProperties)
 
 formatDiv.setup(extensionDiv)
 
-var fileDiv = document.createElement("div")
+const fileDiv = new FileDiv("file")
 
-fileDiv.id = "file-div"
-
-document.getElementById("file").addEventListener("click", async () => {
-	fetch("http://localhost:8008/files")
-	.then((res) => res.json())
-	.then((body) => {
-		document.getElementById("file-div").textContent = ""
-		body.children.forEach((child) => {parseFile(child, document.getElementById("file-div"), 0);})
-	});
-});
-
-fileDiv.dataset.visible = false
-
-extensionDiv.appendChild(fileDiv)
+fileDiv.setup(extensionDiv)
 
 document.getElementById("body").insertBefore(extensionDiv, document.getElementById("open-editors"));
 

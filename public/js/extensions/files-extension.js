@@ -1,7 +1,31 @@
 import { fileExtensions, startScreen  } from "../consts.js";
-import { state } from "../main.js";
+import { DisplayDiv } from "../template.js";
+import { state } from "../consts.js";
 
 var mainDoc = document.getElementById("main");
+
+export class FileDiv extends DisplayDiv {
+
+	constructor(id){
+
+		super(id);
+	}
+
+	setup(nodeRef) {
+
+		document.getElementById("file").addEventListener("click", () => {
+		fetch("http://localhost:8008/files")
+		.then((res) => res.json())
+		.then((body) => {
+			document.getElementById("file-div").textContent = ""
+			body.children.forEach((child) => {parseFile(child, document.getElementById("file-div"), 0);})
+			});
+		});
+
+		this.attach(nodeRef)
+
+	}
+}
 
 export function parseFile(file, nodeRef, depth) {
 	
@@ -52,7 +76,7 @@ function switchFile(e, fileName, filePath){
 		console.log(state.openFiles)
 		document.querySelectorAll(`[data-name="${state.openFiles[state.currentFileIndex]}"]`)[1].dataset.open = false
 		state.currentFileIndex = state.openFiles.indexOf(fileName)
-		document.getElementById("main").innerHTML = state.saveStates[state.currentFileIndex].at(0)
+		document.getElementById("main").innerHTML = state.saveStates[state.currentFileIndex].at(-1)
 		document.querySelectorAll(`[data-name="${state.openFiles[state.currentFileIndex]}"]`)[1].dataset.open = true
 		console.log(state.openFiles)
 		return
@@ -133,7 +157,7 @@ export function save(){
 		headers: {
 			"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
 		},
-		body: `body=${body}&path=${path}`
+		body: `body=${encodeURIComponent(body)}&path=${path}`
 	});
 }
 

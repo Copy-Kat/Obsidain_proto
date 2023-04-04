@@ -85,7 +85,7 @@ app.post("/write", (req, res) => {
 	// }
 	console.log(req.body["body"]);
 	console.log(req.body["path"]);
-	fs.writeFile(req.body["path"], req.body["body"], function (err) {
+	fs.writeFile(req.body["path"], decodeURIComponent(req.body["body"]), function (err) {
 		if (err) {
 			return console.log(err);
 		}
