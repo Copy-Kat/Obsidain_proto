@@ -1,6 +1,7 @@
-import { updateFomat, tab, format} from "./extensions/format-extension.js";
-import { dataProperties, keyBinds} from "./consts.js";
+import { updateFomat, tab, format, FormatDiv} from "./extensions/format-extension.js";
 import { parseFile, save } from "./extensions/files-extension.js";
+import { dataProperties, keyBinds} from "./consts.js";
+import { createWraperDiv } from "./utils.js";
 
 var mainDoc = document.getElementById("main");
 var currentExtension = "";
@@ -14,38 +15,15 @@ export var state = {
 
 }
 
-console.log(state.saveStates)
+const extensionDiv = createWraperDiv("extension", false)
 
-var extensionDiv = document.createElement("div");
-
-extensionDiv.id = "extension";
-
-var titleDiv = document.createElement("div");
-
-titleDiv.innerText = ""
-
-titleDiv.id = "extension-name"
+const titleDiv = createWraperDiv("extension-name");
 
 extensionDiv.appendChild(titleDiv)
 
-var formatDiv = document.createElement("div");
+const formatDiv = new FormatDiv("format", dataProperties)
 
-formatDiv.id = "format-div";
-
-formatDiv.dataset.visible = false
-
-for (const [key, value] of Object.entries(dataProperties)) {
-	let data = document.createElement("div");
-	data.id = key;
-	data.dataset.elementType = value[1]
-	data.classList.add("format-button")
-	data.innerText = value[1][0];
-	formatDiv.appendChild(data);
-}
-
-extensionDiv.appendChild(formatDiv)
-
-extensionDiv.dataset.visible = false;
+formatDiv.setup(extensionDiv)
 
 var fileDiv = document.createElement("div")
 
@@ -60,32 +38,14 @@ document.getElementById("file").addEventListener("click", async () => {
 	});
 });
 
-
-
 fileDiv.dataset.visible = false
 
 extensionDiv.appendChild(fileDiv)
 
+document.getElementById("body").insertBefore(extensionDiv, document.getElementById("open-editors"));
 
-document
-	.getElementById("body")
-	.insertBefore(extensionDiv, document.getElementById("open-editors"));
-
-const formatWraper = document.getElementById("format-div").childNodes;
-formatWraper.forEach((button) => {
-	button.addEventListener("mousedown", (e) => {
-		e.preventDefault();
-		let selection = window.getSelection().getRangeAt(0)
-		//console.log(selection.startContainer.parentElement.tagName !== "DIV")
-		if (selection.startContainer.parentElement.tagName !== "DIV") {
-			//console.log("lmo")
-			format(button.id, selection, button.dataset.elementType)
-		}
-	})
-})
-
-const extensions = document.getElementById("top").childNodes;
-extensions.forEach((extension) => {
+// switch extension
+document.getElementById("top").childNodes.forEach((extension) => {
 	extension.addEventListener("click", () => {
 		if (extension.dataset.selected === "true") {
 			extension.dataset.selected = false;
@@ -191,8 +151,5 @@ function update(){
 
 	}
 }
-
-
-
 
 document.getElementById("main").addEventListener("click", () => updateFomat());

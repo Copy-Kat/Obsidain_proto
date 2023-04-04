@@ -1,6 +1,42 @@
 import { dataProperties } from "../consts.js";
+import { DisplayDiv } from "../template.js";
 
 var mainDoc = document.getElementById("main");
+
+export class FormatDiv extends DisplayDiv {
+
+	constructor(id, dataProperties){
+
+		super(id);
+		this.dataProperties = dataProperties
+	}
+
+	setup(nodeRef) {
+
+		for (const [key, value] of Object.entries(this.dataProperties)) {
+			let data = document.createElement("div");
+			data.id = key;
+			data.dataset.elementType = value[1]
+			data.classList.add("format-button")
+			data.innerText = value[1][0];
+			this.body.appendChild(data);
+		}
+
+		this.attach(nodeRef)
+
+		this.body.childNodes.forEach((button) => {
+			button.addEventListener("mousedown", (e) => {
+				e.preventDefault();
+				let selection = window.getSelection().getRangeAt(0)
+				//console.log(selection.startContainer.parentElement.tagName !== "DIV")
+				if (selection.startContainer.parentElement.tagName !== "DIV") {
+					//console.log("lmo")
+					format(button.id, selection, button.dataset.elementType)
+				}
+			})
+		})
+	}
+}
 
 export function updateFomat() {
 
