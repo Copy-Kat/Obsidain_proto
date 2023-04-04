@@ -11,7 +11,7 @@ export const keyBinds = {
 	undo: "z",
 	highlight: "i",
 	save: "s",
-	test: "f",
+	test: "y",
 };
 
 export const fileExtensions = {
@@ -20,8 +20,8 @@ export const fileExtensions = {
 
 export const startScreen =
 `<div style="height: 100%; display: grid; grid-template-columns: 1fr 3fr 1fr;">
-	<div style="height: 100%; grid-column: 2;">
-		<h2> <i class="nf nf-md-fountain_pen_tip" style="font-size: 2.5rem;"></i> Typewriter</h2>
+	<div style="height: 100%; grid-column: 2; font-size: 200%;">
+		<h2> <i class="nf nf-md-fountain_pen_tip" style="font-size: 200%;"></i> Typewriter</h2>
 		<h4>Node taking improved</h4>
 		<h5>Start</h5>
 		<h6>New file</h6>
