@@ -3,6 +3,41 @@ import { DisplayDiv } from "../template.js";
 
 var mainDoc = document.getElementById("main");
 
+class Button {
+
+	constructor(type, id, icon, classList, etype) {
+
+		switch (type) {
+
+			case "normal":
+
+				console.log("yes");
+
+				const button = document.createElement("div");
+				button.id = id;
+				button.classList.add(classList);
+				button.innerHTML = `<i class="${icon}"></i>`;
+
+				button.addEventListener("mousedown", (e) => {
+					e.preventDefault();
+					let selection = window.getSelection().getRangeAt(0)
+					//console.log(selection.startContainer.parentElement.tagName !== "DIV")
+					if (selection.startContainer.parentElement.tagName !== "DIV") {
+						//console.log("lmo")
+						format(id, selection, etype)
+					}
+				})
+
+				this.body = button
+
+				break;
+		
+			default:
+				break;
+		}
+	}
+}
+
 export class FormatDiv extends DisplayDiv {
 
 	constructor(id, dataProperties){
@@ -14,27 +49,30 @@ export class FormatDiv extends DisplayDiv {
 	setup(nodeRef) {
 
 		for (const [key, value] of Object.entries(this.dataProperties)) {
-			let data = document.createElement("div");
-			data.id = key;
-			data.dataset.elementType = value[1]
-			data.classList.add("format-button")
-			data.innerText = value[1][0];
-			this.body.appendChild(data);
+
+			const button = new Button("normal", key, value[2], "format-button", value[1])
+			// let data = document.createElement("div");
+			// data.id = key;
+			// data.classList.add("format-button")
+			// data.innerText = value[1][0];
+
+			console.log(button.body)
+			this.body.appendChild(button.body);
 		}
 
 		this.attach(nodeRef)
 
-		this.body.childNodes.forEach((button) => {
-			button.addEventListener("mousedown", (e) => {
-				e.preventDefault();
-				let selection = window.getSelection().getRangeAt(0)
-				//console.log(selection.startContainer.parentElement.tagName !== "DIV")
-				if (selection.startContainer.parentElement.tagName !== "DIV") {
-					//console.log("lmo")
-					format(button.id, selection, button.dataset.elementType)
-				}
-			})
-		})
+		// this.body.childNodes.forEach((button) => {
+		// 	button.addEventListener("mousedown", (e) => {
+		// 		e.preventDefault();
+		// 		let selection = window.getSelection().getRangeAt(0)
+		// 		//console.log(selection.startContainer.parentElement.tagName !== "DIV")
+		// 		if (selection.startContainer.parentElement.tagName !== "DIV") {
+		// 			//console.log("lmo")
+		// 			format(button.id, selection, button.dataset.elementType)
+		// 		}
+		// 	})
+		// })
 	}
 }
 

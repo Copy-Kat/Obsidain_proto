@@ -28,11 +28,14 @@ export class FileDiv extends DisplayDiv {
 }
 
 export function parseFile(file, nodeRef, depth) {
+
+
 	
 	if (file.children) {
 		//console.log(file)
 		var newNode = document.createElement("div")
-		newNode.dataset.name = file.name;
+		newNode.textContent = " " + file.name;
+		newNode.className = (fileExtensions["file"][0])
 		newNode.dataset.type = "dir"
 		newNode.dataset.expanded = false;
 		newNode.dataset.path = file.path;
@@ -40,6 +43,7 @@ export function parseFile(file, nodeRef, depth) {
 		newNode.style.zIndex = `${depth}`;
 		newNode.addEventListener("click", (e) => {
 			e.stopPropagation()
+			// newNode.focus()
 			//console.log(typeof newNode.dataset.expanded)
 			newNode.dataset.expanded = newNode.dataset.expanded === "false"
 		})
@@ -57,9 +61,10 @@ export function parseFile(file, nodeRef, depth) {
 		var newNode1 = document.createElement("div");
 		newNode1.dataset.type = "file";
 		newNode1.dataset.name = file.name;
+		newNode1.textContent = " " + file.name;
+		newNode1.className = (fileExtensions[file.name.split(".").at(-1)][0])
 		newNode1.dataset.path = file.path;
 		newNode1.style.paddingLeft = `${depth * 10}px`;
-		newNode1.style.zIndex = `${depth}`;
 		
 		newNode1.addEventListener("click", (e) => {switchFile(e, file.name, file.path)})
 

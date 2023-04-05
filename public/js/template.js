@@ -13,6 +13,3 @@ export class DisplayDiv {
 	}
 
 }
-
-
-

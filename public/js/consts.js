@@ -8,10 +8,11 @@ export var state = {
 }
 
 export const dataProperties = {
-	bold: ["font-weight", "bold"],
-	em: ["font-style", "italic"],
-	u: ["text-decoration", "underline"],
+	bold: ["font-weight", "bold", "nf nf-fa-bold"],
+	em: ["font-style", "italic", "nf nf-fa-italic"],
+	u: ["text-decoration-line", "underline", "nf nf-fa-underline"],
 };
+
 
 export const keyBinds = {
 	bold: "b",
@@ -24,7 +25,21 @@ export const keyBinds = {
 };
 
 export const fileExtensions = {
-	html : ["nf nf-cod-code", "#c16930"]
+	html : ["nf nf-cod-code", "#c16930"],
+	js : ["nf nf-dev-javascript_badge", "#E9FF00"],
+	css : ["nf nf-seti-css", "#0FE3EF"],
+	py : ["nf nf-dev-python", "#0FE3EF"],
+	json : ["nf nf-cod-json", "#E9FF00"],
+	file : ["nf nf-oct-file_directory", "#930FD4"],
+	// html : ["nf nf-cod-code", "#c16930"],
+	// html : ["nf nf-cod-code", "#c16930"],
+	// html : ["nf nf-cod-code", "#c16930"],
+	// html : ["nf nf-cod-code", "#c16930"],
+	// html : ["nf nf-cod-code", "#c16930"],
+	// html : ["nf nf-cod-code", "#c16930"],
+	// html : ["nf nf-cod-code", "#c16930"],
+	// html : ["nf nf-cod-code", "#c16930"],
+	// html : ["nf nf-cod-code", "#c16930"]
 }
 
 export const startScreen =

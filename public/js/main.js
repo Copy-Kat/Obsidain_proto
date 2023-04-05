@@ -1,5 +1,5 @@
 import { updateFomat, tab, format, FormatDiv} from "./extensions/format-extension.js";
-import { parseFile, save, FileDiv } from "./extensions/files-extension.js";
+import { save, FileDiv } from "./extensions/files-extension.js";
 import { dataProperties, keyBinds, state} from "./consts.js";
 import { createWraperDiv } from "./utils.js";
 
@@ -113,6 +113,10 @@ document.addEventListener("keydown", (event) => {
 });
 
 function update(){
+
+	if (state.currentFileIndex === -1) {
+		return
+	}
 
 	updateFomat();
 

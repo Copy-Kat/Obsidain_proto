@@ -199,7 +199,8 @@
  content:"\eac3"
 }
 .nf-cod-code:before {
- content:"\eac4"
+ content:"\eac4";
+ color: #c16930;
 }
 .nf-cod-collapse_all:before {
  content:"\eac5"
@@ -574,7 +575,8 @@
  content:"\eb0e"
 }
 .nf-cod-json:before {
- content:"\eb0f"
+ content:"\eb0f";
+ color: #E9FF00;
 }
 .nf-cod-kebab_vertical:before {
  content:"\eb10"
@@ -1555,7 +1557,8 @@
  content:"\e74e"
 }
 .nf-dev-javascript_badge:before {
- content:"\e781"
+ content:"\e781";
+ color: #E9FF00;
 }
 .nf-dev-javascript_shield:before {
  content:"\e74f"
@@ -1690,7 +1693,8 @@
  content:"\e7a1"
 }
 .nf-dev-python:before {
- content:"\e73c"
+ content:"\e73c";
+ color: #0FE3EF;
 }
 .nf-dev-rackspace:before {
  content:"\e7b9"
@@ -32038,7 +32042,8 @@
  content:"\f40d"
 }
 .nf-oct-file_directory:before {
- content:"\f413"
+ content:"\f413";
+ color: #930FD4;
 }
 .nf-oct-file_media:before {
  content:"\f40f"
@@ -32623,7 +32628,8 @@
  content:"\e647"
 }
 .nf-seti-css:before {
- content:"\e614"
+ content:"\e614";
+ color: #0FE3EF;
 }
 .nf-seti-csv:before {
  content:"\e64a"
