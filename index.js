@@ -90,7 +90,8 @@ app.post("/write", (req, res) => {
 			return console.log(err);
 		}
 		console.log("The file was saved!");
-	}); 
+	});
+	res.send(`Writen to: ${req.body["path"]}`)
 	//console.log(req.body))
 })
 

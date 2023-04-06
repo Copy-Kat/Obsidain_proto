@@ -163,7 +163,7 @@ export function save(){
 			"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
 		},
 		body: `body=${encodeURIComponent(body)}&path=${path}`
-	});
+	}).then((res) => res.text()).then((text) => console.log(text));
 }
 
 function setup() {
